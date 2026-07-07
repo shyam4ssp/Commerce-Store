@@ -127,7 +127,24 @@
   /* Additional tokens */
   --type-fixed-font-family: adobe-clean, "Roboto Mono", menlo, consolas, "Liberation Mono", monospace, system-ui, sans-serif;
   --background-color: var(--color-neutral-50);
-  --nav-height: 6.4rem;
+  --nav-height: 15.7rem;
+  --header-height: var(--nav-height);
+  --nav-top-height: 10.7rem;
+  --nav-bottom-height: 5rem;
+  --color-somero-pink: #c83293;
+  --color-somero-black: #231f20;
+  --color-somero-gray: #656565;
+  --color-somero-border: #c0c0c0;
+  --color-somero-nav-border: #e9e9e9;
+  --type-somero-font-family: "Trade Gothic", roboto-condensed, adobe-clean, roboto, system-ui, sans-serif;
+  --primary-banner-btn-bg: #fff;
+  --primary-banner-btn-color: #C83293CC;
+  --theme-purple: #C83293;
+  --theme-purple-banner-bg: rgb(200 50 147 / 80%);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 /* fallback font */
@@ -465,7 +482,7 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: auto;
   padding: 0 var(--spacing-medium);
 }

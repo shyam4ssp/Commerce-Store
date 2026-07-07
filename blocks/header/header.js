@@ -233,6 +233,7 @@ export default async function decorate(block) {
   navTools.append(wishlist);
 
   const wishlistButton = navTools.querySelector('.nav-wishlist-button');
+  wishlistButton.closest('.wishlist-wrapper').classList.add('nav-tool-hidden');
 
   const wishlistMeta = getMetadata('wishlist');
   const wishlistPath = wishlistMeta ? new URL(wishlistMeta, window.location).pathname : '/wishlist';
@@ -246,7 +247,11 @@ export default async function decorate(block) {
 
   const minicart = document.createRange().createContextualFragment(`
      <div class="minicart-wrapper nav-tools-wrapper">
-       <button type="button" class="nav-cart-button" aria-label="Cart"></button>
+       <button type="button" class="nav-cart-button nav-tool-button" aria-label="Cart">
+         <span class="nav-tool-icon nav-cart-icon" aria-hidden="true"></span>
+         <span class="nav-tool-label">Cart</span>
+         <span class="nav-tool-chevron" aria-hidden="true"></span>
+       </button>
        <div class="minicart-panel nav-tools-panel"></div>
      </div>
    `);
@@ -347,7 +352,10 @@ export default async function decorate(block) {
   /** Search */
   const searchFragment = document.createRange().createContextualFragment(`
   <div class="search-wrapper nav-tools-wrapper">
-    <button type="button" class="nav-search-button">Search</button>
+    <button type="button" class="nav-search-button" aria-label="Search">
+      <span class="nav-search-label">Search</span>
+      <span class="nav-search-icon" aria-hidden="true"></span>
+    </button>
     <div class="nav-search-input nav-search-panel nav-tools-panel">
       <form id="search-bar-form"></form>
       <div class="search-bar-result" style="display: none;"></div>
@@ -467,6 +475,17 @@ export default async function decorate(block) {
 
   searchButton.addEventListener('click', () => toggleSearch(!searchPanel.classList.contains('nav-tools-panel--show')));
 
+  const languageSelector = document.createRange().createContextualFragment(`
+    <div class="language-wrapper nav-tools-wrapper">
+      <button type="button" class="nav-language-button nav-tool-button" aria-label="Language">
+        <span class="nav-tool-icon nav-language-icon" aria-hidden="true"></span>
+        <span class="nav-tool-label">English</span>
+        <span class="nav-tool-chevron" aria-hidden="true"></span>
+      </button>
+    </div>
+  `);
+  navTools.append(languageSelector);
+
   navTools.querySelector('.nav-search-button').addEventListener('click', () => {
     if (isDesktop.matches) {
       toggleAllNavSections(navSections);
@@ -529,8 +548,39 @@ export default async function decorate(block) {
     overlay.classList.toggle('show');
     toggleMenu(nav, navSections);
   });
-  nav.prepend(hamburger);
   nav.setAttribute('aria-expanded', 'false');
+
+  const navTop = document.createElement('div');
+  navTop.className = 'nav-top';
+  const navBottom = document.createElement('div');
+  navBottom.className = 'nav-bottom';
+
+  const navBrandEl = nav.querySelector('.nav-brand');
+  const navSectionsEl = nav.querySelector('.nav-sections');
+  const navToolsEl = nav.querySelector('.nav-tools');
+  const searchWrapper = navToolsEl.querySelector('.search-wrapper');
+
+  navTop.append(navBrandEl, searchWrapper, navToolsEl);
+  navBottom.append(navSectionsEl);
+  navTop.prepend(hamburger);
+  nav.append(navTop, navBottom);
+
+  navSectionsEl?.querySelectorAll('a').forEach((link) => {
+    try {
+      const linkPath = new URL(link.href, window.location).pathname;
+      const { pathname } = window.location;
+      const isHome = linkPath === '/' && (pathname === '/' || pathname.endsWith('/index'));
+      const isMatch = linkPath === pathname
+        || (linkPath !== '/' && pathname.startsWith(linkPath));
+      if (isHome || isMatch) {
+        link.setAttribute('aria-current', 'page');
+        link.closest('li')?.classList.add('nav-current');
+      }
+    } catch (e) {
+      // ignore invalid URLs
+    }
+  });
+
   // prevent mobile nav behavior on window resize
   toggleMenu(nav, navSections, isDesktop.matches);
   isDesktop.addEventListener('change', () => toggleMenu(nav, navSections, isDesktop.matches));
