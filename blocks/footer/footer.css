@@ -1,17 +1,98 @@
 footer {
-    background-color: var(--color-neutral-100);
-    font: var(--type-body-2-default-font);
-    letter-spacing: var(--type-body-2-default-letter-spacing);
+    background-color: #1a1818;
+    color: var(--background-color);
+    font-family: var(--type-somero-font-family);
+    font-size: 1.4rem;
+    line-height: 3.4rem;
+    letter-spacing: normal;
 }
 
 footer .footer > div {
     margin: auto;
-    max-width: 1200px;
-    padding: 40px 24px 24px;
+    max-width: 1400px;
+    padding: 8rem var(--spacing-medium) 0;
+}
+
+footer .footer > div > div {
+    display: grid;
+    gap: var(--spacing-xbig);
+    grid-template-columns: 1fr;
 }
 
 footer .footer p {
     margin: 0;
+}
+
+footer .footer h3,
+footer .footer h4,
+footer .footer h5 {
+    margin: 0 0 2rem;
+    font-family: var(--type-somero-font-family);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+    color: var(--background-color);
+}
+
+footer .footer a {
+    color: var(--background-color);
+    text-decoration: none;
+}
+
+footer .footer a:hover {
+    color: var(--color-somero-pink);
+}
+
+footer .footer img {
+    max-width: 100%;
+    height: auto;
+}
+
+footer .footer .button-container {
+    margin-top: 1rem;
+}
+
+footer .footer .button-container a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 0;
+    background: var(--color-somero-pink);
+    border: 0;
+    color: var(--background-color);
+    font-family: var(--type-somero-font-family);
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+    padding: 1.4rem 3rem;
+    text-decoration: none;
+}
+
+footer .footer .button-container a:hover {
+    background: #a62878;
+    color: var(--background-color);
+}
+
+footer .footer .footer-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-medium);
+    margin-top: var(--spacing-xbig);
+    padding: var(--spacing-medium) 0;
+    background: #282828;
+    border-top: 1px solid #282828;
+}
+
+footer .footer .footer-copyright {
+    font-size: 1.4rem;
+    line-height: normal;
+    text-align: center;
+    color: var(--background-color);
 }
 
 .storeview-switcher-button {
@@ -68,6 +149,10 @@ footer .footer p {
 
 @media (min-width: 900px) {
     footer .footer > div {
-        padding: 40px 32px 24px;
+        padding: 8rem var(--spacing-big) 0;
+    }
+
+    footer .footer > div > div {
+        grid-template-columns: 1.4fr 1fr 1fr 1fr 1.2fr;
     }
 }

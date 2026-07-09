@@ -1,0 +1,76 @@
+{
+  "definitions": [
+    {
+      "title": "Category Cards",
+      "id": "category-cards",
+      "model": "category-cards",
+      "filter": "category-cards",
+      "plugins": {
+        "da": {
+          "rows": 1,
+          "columns": 2
+        }
+      }
+    },
+    {
+      "title": "Category Cards Carousel",
+      "id": "category-cards-carousel",
+      "model": "category-cards",
+      "filter": "category-cards"
+    },
+    {
+      "title": "Machine Category Cards",
+      "id": "category-cards-machine",
+      "model": "category-cards",
+      "filter": "category-cards"
+    },
+    {
+      "title": "Category Card",
+      "id": "category-card",
+      "model": "category-card",
+      "plugins": {
+        "da": {
+          "rows": 1,
+          "columns": 2,
+          "fields": [
+            { "name": "image", "selector": "div:nth-child(1)>picture>img[src]" },
+            { "name": "imageAlt", "selector": "div:nth-child(1)>picture>img[alt]" },
+            { "name": "link", "selector": "div:nth-child(2)>a[href]" }
+          ]
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "category-card",
+      "fields": [
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "image",
+          "label": "Image",
+          "multi": false
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "imageAlt",
+          "label": "Image Alt"
+        },
+        {
+          "component": "aem-content",
+          "valueType": "string",
+          "name": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "id": "category-cards",
+      "components": ["category-card"]
+    }
+  ]
+}

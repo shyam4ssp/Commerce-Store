@@ -1,0 +1,215 @@
+main > .category-cards-container {
+  margin-top: 7rem;
+}
+
+main > .category-cards-container h2 {
+  margin-top: 0;
+  margin-bottom: .5rem;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+
+main > .category-cards-container p {
+  margin-block: 0;
+}
+
+.category-cards {
+  font-family: var(--type-somero-font-family);
+  color: var(--color-somero-black);
+  margin-top: 4rem;
+}
+
+.category-cards .category-cards-header {
+  margin-bottom: var(--spacing-medium);
+}
+
+.category-cards .category-cards-title :is(h1, h2, h3, h4, h5, h6, p) {
+  margin: 0;
+  font-family: var(--type-somero-font-family);
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+.category-cards .category-cards-description :is(p) {
+  margin: 5px 0 0;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: none;
+}
+
+.category-cards .category-cards-wrapper {
+  position: relative;
+}
+
+.category-cards .category-cards-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spacing-xbig);
+}
+
+.category-cards-machine .category-cards-list {
+  grid-template-columns: 1fr;
+}
+
+.category-cards .category-cards-item {
+  border: 1px solid #e0e0e0;
+  background: var(--background-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.category-cards-machine .category-cards-item {
+  min-height: 31.5rem;
+  overflow: hidden;
+}
+
+.category-cards .category-cards-image {
+  padding: 2rem 2rem 0;
+  line-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-cards-machine .category-cards-item:hover .category-cards-image {
+  scale: 1.2;
+  transition: scale 0.3s ease-in-out;
+}
+
+.category-cards .category-cards-image picture,
+.category-cards .category-cards-image img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 440 / 260;
+  object-fit: cover;
+}
+
+.category-cards .category-cards-body {
+  margin-top: auto;
+  padding: 0 2rem 1.9rem;
+}
+
+.category-cards .category-cards-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: normal;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: var(--color-somero-black);
+}
+
+.category-cards-carousel .category-cards-link {
+  text-transform: none;
+}
+
+.category-cards .category-cards-link::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  background: url('../../icons/chevron-right-black.svg') center / contain no-repeat;
+  flex-shrink: 0;
+}
+
+.category-cards .category-cards-link:hover {
+  color: var(--color-somero-pink);
+}
+
+.category-cards .category-cards-link:hover::after {
+  background: url('../../icons/chevron-right-pink.svg') center / contain no-repeat;
+}
+
+.category-cards-carousel {
+  position: relative;
+}
+
+.category-cards-carousel .scroll-carousel-nav {
+  position: absolute;
+  top: -14rem;
+  right: 0;
+  display: flex;
+  gap: 10px;
+}
+
+.category-cards-carousel .category-cards-header {
+  padding-right: 9rem;
+}
+
+.category-cards-carousel .category-cards-list {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  gap: 2rem;
+}
+
+.category-cards-carousel .category-cards-list::-webkit-scrollbar {
+  display: none;
+}
+
+.category-cards-carousel .category-cards-item {
+  flex: 0 0 min(100%, 34rem);
+  scroll-snap-align: start;
+  min-height: 33.2rem;
+}
+
+.category-cards-carousel .category-cards-image picture,
+.category-cards-carousel .category-cards-image img {
+  aspect-ratio: 300 / 230;
+  object-fit: contain;
+}
+
+.scroll-carousel-nav button {
+  width: 3.2rem;
+  height: 3.2rem;
+  padding: 0;
+  border: 1px solid #e0e0e0;
+  background: var(--color-somero-pink);
+  border-color: var(--color-somero-pink);
+  color: var(--background-color);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-carousel-nav button:disabled {
+  cursor: default;
+  background: var(--white);
+  border-color: #E0E0E0;
+  color: var(--black);
+}
+
+.scroll-carousel-nav .icon {
+  width: 7px;
+  height: 12px;
+  line-height: normal;
+}
+
+@media (min-width: 600px) {
+  .category-cards-machine .category-cards-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .category-cards-carousel .scroll-carousel-nav {
+    top: -10rem;
+  }
+  
+  .category-cards-machine .category-cards-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

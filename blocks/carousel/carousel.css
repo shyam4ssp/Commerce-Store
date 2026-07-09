@@ -172,7 +172,7 @@ main > .section .carousel-wrapper {
     margin: 68px;
     padding: 4.7rem 4rem;
     color: white;
-    background-color: rgb(19 19 19 / 75%);
+    background: var(--theme-purple-banner-bg);
     position: relative;
     width: var(--slide-content-width, auto);
 
