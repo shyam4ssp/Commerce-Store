@@ -159,6 +159,48 @@
     ]
   },
   {
+    "id": "about",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "backgroundImage",
+        "label": "Background Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "backgroundImageAlt",
+        "label": "Background Image Alt"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "eyebrow",
+        "label": "Eyebrow"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "heading",
+        "label": "Heading"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "copy",
+        "label": "Copy"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "cta",
+        "label": "CTA Link"
+      }
+    ]
+  },
+  {
     "id": "accordion-item",
     "fields": [
       {
@@ -226,6 +268,30 @@
         "name": "text",
         "label": "Text",
         "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "category-card",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "link",
+        "label": "Link"
       }
     ]
   },
@@ -448,6 +514,54 @@
     ]
   },
   {
+    "id": "product-card",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Image",
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Title"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "sku",
+        "label": "SKU"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "rating",
+        "label": "Rating Count"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "description",
+        "label": "Description"
+      },
+      {
+        "component": "aem-content",
+        "valueType": "string",
+        "name": "priceLink",
+        "label": "Price Link"
+      }
+    ]
+  },
+  {
     "id": "product-details",
     "fields": [
       {
@@ -523,6 +637,29 @@
         "name": "fragment",
         "label": "Fragment",
         "valueType": "string"
+      }
+    ]
+  },
+  {
+    "id": "testimonial",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "initial",
+        "label": "Avatar Initial"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "author",
+        "label": "Author"
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "quote",
+        "label": "Quote"
       }
     ]
   }
