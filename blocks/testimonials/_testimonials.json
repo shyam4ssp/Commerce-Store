@@ -21,9 +21,9 @@
           "rows": 1,
           "columns": 3,
           "fields": [
-            { "name": "initial", "selector": "div:nth-child(1)" },
-            { "name": "author", "selector": "div:nth-child(2)" },
-            { "name": "quote", "selector": "div:nth-child(3)" }
+            { "name": "initial", "selector": ".testimonials-avatar" },
+            { "name": "author", "selector": ".testimonials-meta" },
+            { "name": "quote", "selector": ".testimonials-quote" }
           ]
         }
       }
