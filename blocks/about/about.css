@@ -52,7 +52,7 @@
   letter-spacing: 0.16px;
 }
 
-.about .about-heading {
+.about-copy :is(h1, h2, h3) {
   margin: 0;
   margin-bottom: 4rem;
   font-size: 4.4rem;
@@ -62,22 +62,19 @@
   text-transform: uppercase;
 }
 
-.about .about-heading p {
-  margin: 0;
-}
-
-.about .about-copy {
-  margin-bottom: 4rem;
-}
-
 .about .about-copy :is(p) {
   margin: 0;
   font-size: 1.6rem;
   line-height: 2.6rem;
   letter-spacing: 0.16px;
+  margin-bottom: 4rem;
 }
 
-.about .about-link {
+.about .about-copy :is(p):last-child {
+  margin-bottom: 0;
+}
+
+.about .about-copy a {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -88,7 +85,7 @@
   color: var(--color-somero-pink);
 }
 
-.about .about-link::after {
+.about .about-copy a::after {
   content: '';
   width: 20px;
   height: 20px;

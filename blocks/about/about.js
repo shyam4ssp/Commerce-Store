@@ -22,11 +22,12 @@ export default function decorate(block) {
     switch (label) {
       case 'backgroundimage': {
         const imageUrl = valueCell.textContent.trim();
+        const backgroundImageAlt = valueCell.nextElementSibling?.textContent.trim() || '';
       
         if (imageUrl) {
           const img = document.createElement('img');
           img.src = imageUrl;
-          img.alt = '';
+          img.alt = backgroundImageAlt || 'Background Image';
           img.loading = 'lazy';
       
           background.append(img);

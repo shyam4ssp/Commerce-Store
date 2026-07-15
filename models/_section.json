@@ -129,9 +129,13 @@
       "id": "section",
       "components": [
         "hero",
+        "about",
         "accordion",
         "cards",
         "carousel",
+        "category-cards",
+        "category-cards-carousel",
+        "category-cards-machine",
         "columns",
         "commerce-account-header",
         "commerce-account-sidebar",
@@ -164,6 +168,7 @@
         "product-list-page",
         "product-recommendations",
         "targeted-block",
+        "testimonials",
         "text"
       ]
     }
