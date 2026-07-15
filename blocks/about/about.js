@@ -4,6 +4,7 @@ export default function decorate(block) {
   const rows = [...block.children];
   const bgRow = rows.find((row) => row.querySelector('picture, img'));
   const contentRows = rows.filter((row) => row !== bgRow);
+  const getValueCell = (row) => row.children[1] || row.children[0];
 
   const section = document.createElement('div');
   section.className = 'about-inner';
@@ -28,14 +29,15 @@ export default function decorate(block) {
   content.className = 'about-content';
 
   contentRows.forEach((row, index) => {
+    const valueCell = getValueCell(row);
     const wrapper = document.createElement('div');
     if (index === 0) {
       wrapper.className = 'about-eyebrow';
     } else if (index === 1) {
       wrapper.className = 'about-heading';
-    } else if (row.querySelector('a')) {
+    } else if (valueCell.querySelector('a')) {
       wrapper.className = 'about-cta';
-      const link = row.querySelector('a');
+      const link = valueCell.querySelector('a');
       const cta = document.createElement('a');
       cta.className = 'about-link';
       cta.href = link.href;
@@ -46,7 +48,7 @@ export default function decorate(block) {
     }
 
     if (!wrapper.classList.contains('about-cta')) {
-      wrapper.append(...row.childNodes);
+      wrapper.append(...valueCell.childNodes);
     }
     content.append(wrapper);
     row.remove();

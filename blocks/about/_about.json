@@ -6,17 +6,8 @@
       "model": "about",
       "plugins": {
         "da": {
-          "rows": 1,
-          "columns": 1,
-          "fields": [
-            { "name": "backgroundImage", "selector": "div:nth-child(1)>picture>img[src]" },
-            { "name": "backgroundImageAlt", "selector": "div:nth-child(1)>picture>img[alt]" },
-            { "name": "eyebrow", "selector": "div:nth-child(2)" },
-            { "name": "heading", "selector": "div:nth-child(3)" },
-            { "name": "copy", "selector": "div:nth-child(4)" },
-            { "name": "cta_text", "selector": "div:nth-child(5)>a" },
-            { "name": "cta", "selector": "div:nth-child(5)>a[href]" }
-          ]
+          "name": "about",
+          "type": "key-value-block"
         }
       }
     }
