@@ -56,6 +56,12 @@
           "label": "Copy"
         },
         {
+          "component": "text",
+          "valueType": "string",
+          "name": "cta",
+          "label": "CTA Text"
+        },
+        {
           "component": "aem-content",
           "valueType": "string",
           "name": "cta",
