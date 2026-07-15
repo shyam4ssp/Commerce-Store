@@ -53,16 +53,17 @@
 }
 
 .about .about-heading {
-  margin-bottom: 4rem;
-}
-
-.about .about-heading {
   margin: 0;
+  margin-bottom: 4rem;
   font-size: 4.4rem;
   font-weight: 700;
   line-height: normal;
   letter-spacing: 0.16px;
   text-transform: uppercase;
+}
+
+.about .about-heading p {
+  margin: 0;
 }
 
 .about .about-copy {

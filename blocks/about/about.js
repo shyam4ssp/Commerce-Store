@@ -2,25 +2,12 @@ import { createOptimizedPicture } from '../../scripts/aem.js';
 
 export default function decorate(block) {
   const rows = [...block.children];
-  const bgRow = rows.find((row) => row.querySelector('picture, img'));
-  const contentRows = rows.filter((row) => row !== bgRow);
-  const getValueCell = (row) => row.children[1] || row.children[0];
 
   const section = document.createElement('div');
   section.className = 'about-inner';
 
-  if (bgRow) {
-    const bg = document.createElement('div');
-    bg.className = 'about-background';
-    const img = bgRow.querySelector('img');
-    if (img) {
-      bg.append(
-        createOptimizedPicture(img.src, img.alt, true, [{ width: '1920' }]),
-      );
-    }
-    section.append(bg);
-    bgRow.remove();
-  }
+  const background = document.createElement('div');
+  background.className = 'about-background';
 
   const panel = document.createElement('div');
   panel.className = 'about-panel';
@@ -28,33 +15,54 @@ export default function decorate(block) {
   const content = document.createElement('div');
   content.className = 'about-content';
 
-  contentRows.forEach((row, index) => {
-    const valueCell = getValueCell(row);
-    const wrapper = document.createElement('div');
-    if (index === 0) {
-      wrapper.className = 'about-eyebrow';
-    } else if (index === 1) {
-      wrapper.className = 'about-heading';
-    } else if (valueCell.querySelector('a')) {
-      wrapper.className = 'about-cta';
-      const link = valueCell.querySelector('a');
-      const cta = document.createElement('a');
-      cta.className = 'about-link';
-      cta.href = link.href;
-      cta.textContent = link.textContent;
-      wrapper.append(cta);
-    } else {
-      wrapper.className = 'about-copy';
-    }
+  rows.forEach((row) => {
+    const label = row.children[0]?.textContent.trim().toLowerCase();
+    const valueCell = row.children[1] || row.children[0];
 
-    if (!wrapper.classList.contains('about-cta')) {
-      wrapper.append(...valueCell.childNodes);
+    switch (label) {
+      case 'backgroundimage': {
+        const imageUrl = valueCell.textContent.trim();
+      
+        if (imageUrl) {
+          const img = document.createElement('img');
+          img.src = imageUrl;
+          img.alt = '';
+          img.loading = 'lazy';
+      
+          background.append(img);
+        }
+      
+        break;
+      }
+
+      case 'eyebrow': {
+        const div = document.createElement('div');
+        div.className = 'about-eyebrow';
+        div.append(...valueCell.childNodes);
+        content.append(div);
+        break;
+      }
+
+      case 'content': {
+        const div = document.createElement('div');
+        div.className = 'about-copy';
+        div.append(...valueCell.childNodes);
+        content.append(div);
+        break;
+      }
+
+      default:
+        break;
     }
-    content.append(wrapper);
-    row.remove();
   });
+
+  if (background.hasChildNodes()) {
+    section.append(background);
+  }
 
   panel.append(content);
   section.append(panel);
+
+  block.textContent = '';
   block.append(section);
 }

@@ -183,26 +183,8 @@
       {
         "component": "text",
         "valueType": "string",
-        "name": "heading",
-        "label": "Heading"
-      },
-      {
-        "component": "richtext",
-        "valueType": "string",
-        "name": "copy",
-        "label": "Copy"
-      },
-      {
-        "component": "text",
-        "valueType": "string",
-        "name": "cta_text",
-        "label": "CTA Text"
-      },
-      {
-        "component": "aem-content",
-        "valueType": "string",
-        "name": "cta",
-        "label": "CTA Link"
+        "name": "content",
+        "label": "Content"
       }
     ]
   },
