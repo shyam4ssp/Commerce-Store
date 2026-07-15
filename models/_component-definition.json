@@ -26,10 +26,16 @@
       "id": "blocks",
       "components": [
         {
+          "...": "../blocks/about/_*.json#/definitions"
+        },
+        {
           "...": "../blocks/accordion/_*.json#/definitions"
         },
         {
           "...": "../blocks/cards/_*.json#/definitions"
+        },
+        {
+          "...": "../blocks/category-cards/_*.json#/definitions"
         },
         {
           "...": "../blocks/carousel/_*.json#/definitions"
@@ -49,6 +55,9 @@
         },
         {
           "...": "../blocks/targeted-block/_*.json#/definitions"
+        },
+        {
+          "...": "../blocks/testimonials/_*.json#/definitions"
         },
         {
           "...": "../blocks/commerce-*/_*.json#/definitions"

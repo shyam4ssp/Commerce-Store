@@ -59,6 +59,43 @@
       "id": "blocks",
       "components": [
         {
+          "title": "About",
+          "id": "about",
+          "model": "about",
+          "plugins": {
+            "da": {
+              "rows": 1,
+              "columns": 1,
+              "fields": [
+                {
+                  "name": "backgroundImage",
+                  "selector": "div:nth-child(1)>picture>img[src]"
+                },
+                {
+                  "name": "backgroundImageAlt",
+                  "selector": "div:nth-child(1)>picture>img[alt]"
+                },
+                {
+                  "name": "eyebrow",
+                  "selector": "div:nth-child(2)"
+                },
+                {
+                  "name": "heading",
+                  "selector": "div:nth-child(3)"
+                },
+                {
+                  "name": "copy",
+                  "selector": "div:nth-child(4)"
+                },
+                {
+                  "name": "cta",
+                  "selector": "div:nth-child(5)>a[href]"
+                }
+              ]
+            }
+          }
+        },
+        {
           "title": "Accordion",
           "id": "accordion",
           "model": "accordion",
@@ -125,6 +162,55 @@
                 {
                   "name": "text",
                   "selector": "div:nth-child(2)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "title": "Category Cards",
+          "id": "category-cards",
+          "model": "category-cards",
+          "filter": "category-cards",
+          "plugins": {
+            "da": {
+              "rows": 1,
+              "columns": 2
+            }
+          }
+        },
+        {
+          "title": "Category Cards Carousel",
+          "id": "category-cards-carousel",
+          "model": "category-cards",
+          "filter": "category-cards"
+        },
+        {
+          "title": "Machine Category Cards",
+          "id": "category-cards-machine",
+          "model": "category-cards",
+          "filter": "category-cards"
+        },
+        {
+          "title": "Category Card",
+          "id": "category-card",
+          "model": "category-card",
+          "plugins": {
+            "da": {
+              "rows": 1,
+              "columns": 2,
+              "fields": [
+                {
+                  "name": "image",
+                  "selector": "div:nth-child(1)>picture>img[src]"
+                },
+                {
+                  "name": "imageAlt",
+                  "selector": "div:nth-child(1)>picture>img[alt]"
+                },
+                {
+                  "name": "link",
+                  "selector": "div:nth-child(2)>a[href]"
                 }
               ]
             }
@@ -268,6 +354,43 @@
           "plugins": {
             "da": {
               "type": "key-value-block"
+            }
+          }
+        },
+        {
+          "title": "Testimonials",
+          "id": "testimonials",
+          "model": "testimonials",
+          "filter": "testimonials",
+          "plugins": {
+            "da": {
+              "rows": 1,
+              "columns": 3
+            }
+          }
+        },
+        {
+          "title": "Testimonial",
+          "id": "testimonial",
+          "model": "testimonial",
+          "plugins": {
+            "da": {
+              "rows": 1,
+              "columns": 3,
+              "fields": [
+                {
+                  "name": "initial",
+                  "selector": "div:nth-child(1)"
+                },
+                {
+                  "name": "author",
+                  "selector": "div:nth-child(2)"
+                },
+                {
+                  "name": "quote",
+                  "selector": "div:nth-child(3)"
+                }
+              ]
             }
           }
         },
