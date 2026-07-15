@@ -1,4 +1,5 @@
 import { bindScrollCarousel } from '../../scripts/scroll-carousel.js';
+import { moveInstrumentation } from '../../scripts/ue-utils.js';
 
 function isHeaderRow(row) {
   return !row.querySelector('a.button, .button-container a') && row.children.length <= 2
@@ -9,6 +10,7 @@ function buildCard(row) {
   const cols = [...row.children];
   const li = document.createElement('li');
   li.className = 'testimonials-item';
+  moveInstrumentation(row, li);
 
   const avatarCol = cols[0];
   const nameCol = cols[1] || cols[0];
@@ -20,16 +22,23 @@ function buildCard(row) {
   const avatar = document.createElement('div');
   avatar.className = 'testimonials-avatar';
   avatar.textContent = avatarCol?.textContent.trim().charAt(0) || 'J';
+  if (avatarCol) moveInstrumentation(avatarCol, avatar);
 
   const meta = document.createElement('div');
   meta.className = 'testimonials-meta';
-  meta.append(...(nameCol?.childNodes || []));
+  if (nameCol) {
+    moveInstrumentation(nameCol, meta);
+    meta.append(...nameCol.childNodes);
+  }
 
   header.append(avatar, meta);
 
   const quote = document.createElement('blockquote');
   quote.className = 'testimonials-quote';
-  quote.append(...(quoteCol?.childNodes || []));
+  if (quoteCol) {
+    moveInstrumentation(quoteCol, quote);
+    quote.append(...quoteCol.childNodes);
+  }
 
   const rating = document.createElement('div');
   rating.className = 'testimonials-rating';

@@ -354,15 +354,15 @@
               "fields": [
                 {
                   "name": "initial",
-                  "selector": ".testimonials-avatar"
+                  "selector": "div:nth-child(1)"
                 },
                 {
                   "name": "author",
-                  "selector": ".testimonials-meta"
+                  "selector": "div:nth-child(2)"
                 },
                 {
                   "name": "quote",
-                  "selector": ".testimonials-quote"
+                  "selector": "div:nth-child(3)"
                 }
               ]
             }
