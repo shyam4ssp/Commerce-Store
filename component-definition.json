@@ -88,6 +88,10 @@
                   "selector": "div:nth-child(4)"
                 },
                 {
+                  "name": "cta_text",
+                  "selector": "div:nth-child(5)>a"
+                },
+                {
                   "name": "cta",
                   "selector": "div:nth-child(5)>a[href]"
                 }
