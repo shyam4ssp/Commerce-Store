@@ -19,7 +19,7 @@ header nav {
   display: flex;
   flex-direction: column;
   margin: auto;
-  max-width: 1400px;
+  max-width: 1464px;
   min-height: var(--nav-height);
   font-family: var(--type-somero-font-family);
 }

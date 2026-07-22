@@ -175,20 +175,20 @@ main > .section .carousel-wrapper {
     background: var(--theme-purple-banner-bg);
     position: relative;
     width: var(--slide-content-width, auto);
+}
 
-    .button.primary {
-        border-radius: 0;
-        background-color: var(--primary-banner-btn-bg);
-        color: var(--primary-banner-btn-color);
-        border: 0;
-        font-family: var(--type-somero-font-family);
-        font-size: 18px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: normal;
-        text-transform: uppercase;
-        padding: 1.3rem 4.5rem;
-    }
+.carousel .carousel-slide .carousel-slide-content p a {
+    border-radius: 0;
+    background-color: var(--primary-banner-btn-bg);
+    color: var(--primary-banner-btn-color);
+    border: 0;
+    font-family: var(--type-somero-font-family);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+    padding: 1.3rem 4.5rem;
 }
 
 @media (min-width: 600px) {

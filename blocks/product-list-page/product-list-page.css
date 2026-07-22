@@ -54,10 +54,147 @@
     grid-area: facets;
     margin-block-end: var(--spacing-small);
     display: none;
+    background-color: #f2f2f2;
+    padding: var(--spacing-xsmall) 0;
 }
 
 .block.product-list-page .search__facets--visible {
     display: block;
+}
+
+/* Facet sidebar — accordion filter list */
+.block.product-list-page .search__facets .product-discovery-facet-list__selected-filters {
+    padding: var(--spacing-xsmall) var(--spacing-small);
+    row-gap: var(--spacing-xxsmall);
+}
+
+.block.product-list-page .search__facets .product-discovery-facet-list__facet-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xsmall);
+}
+
+.block.product-list-page .search__facets .product-discovery-facet {
+    padding-block: 0;
+    max-height: 280px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-neutral-500) transparent;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet::-webkit-scrollbar {
+    width: 4px;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet::-webkit-scrollbar-thumb {
+    background-color: var(--color-neutral-500);
+    border-radius: 4px;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet:not(.product-discovery-facet--last) {
+    border-bottom: none;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xsmall);
+    margin-block-end: 0;
+    padding: var(--spacing-small);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #f2f2f2;
+    border-bottom: 1px solid var(--color-neutral-400);
+    color: var(--color-neutral-900);
+    font: var(--type-body-1-strong-font);
+    letter-spacing: var(--type-body-1-strong-letter-spacing);
+    cursor: pointer;
+    user-select: none;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__header::after {
+    content: "";
+    flex-shrink: 0;
+    width: 12px;
+    height: 12px;
+    background: url("../../icons/chevron-up.svg") center / contain no-repeat;
+    transition: transform 0.2s ease;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket {
+    margin: 0;
+    border-bottom: 1px solid var(--color-neutral-400);
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket:last-of-type {
+    border-bottom: none;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-checkbox,
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-radio-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-checkbox {
+    grid-template-columns: 1fr;
+    gap: 0;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-checkbox__checkbox-icon,
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-radio-button__label::before,
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-radio-button__input:checked + .dropin-radio-button__label::after {
+    display: none;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-checkbox__label,
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-radio-button__label {
+    display: block;
+    width: 100%;
+    padding: var(--spacing-xsmall) var(--spacing-small);
+    color: var(--color-neutral-900);
+    font: var(--type-body-2-default-font);
+    letter-spacing: var(--type-body-2-default-letter-spacing);
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-checkbox__label:hover,
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-radio-button__label:hover {
+    background-color: var(--color-neutral-300);
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-checkbox__checkbox:checked + .dropin-checkbox__checkbox-icon + .dropin-checkbox__label,
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-radio-button__input:checked + .dropin-radio-button__label {
+    font: var(--type-body-2-strong-font);
+    letter-spacing: var(--type-body-2-strong-letter-spacing);
+}
+
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-checkbox__description,
+.block.product-list-page .search__facets .product-discovery-facet__bucket .dropin-radio-button__description {
+    display: none;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet--collapsed {
+    max-height: none;
+    overflow: hidden;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet--collapsed .product-discovery-facet__header {
+    border-bottom: none;
+}
+
+.block.product-list-page .search__facets .product-discovery-facet--collapsed .product-discovery-facet__header::after {
+    transform: rotate(180deg);
+}
+
+.block.product-list-page .search__facets .product-discovery-facet--collapsed .product-discovery-facet__bucket,
+.block.product-list-page .search__facets .product-discovery-facet > button {
+    display: none;
 }
 
 .block.product-list-page .search__product-sort {
@@ -104,7 +241,8 @@
             "result-info product-sort"
             "facets product-list"
             ". pagination";
-        grid-template-columns: 270px 1fr;
+        grid-template-columns: 280px 1fr;
+        column-gap: var(--spacing-medium);
     }
 
     .block.product-list-page .search__view-facets {
@@ -112,8 +250,9 @@
     }
 
     .block.product-list-page .search__facets {
-        display: unset;
-        margin-right: var(--spacing-small);
+        display: block;
+        margin-right: 0;
+        align-self: start;
     }
 
     .block.product-list-page .search__product-sort {

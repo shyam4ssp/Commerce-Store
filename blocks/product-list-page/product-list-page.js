@@ -143,7 +143,17 @@ export default async function decorate(block) {
     })($viewFacets),
 
     // Facets
-    provider.render(Facets, {})($facets),
+    provider.render(Facets, {
+      slots: {
+        FacetBucketLabel: (ctx) => {
+          // Match design: plain labels without result counts
+          if (ctx.data.__typename === 'RangeBucket') return;
+          const label = document.createElement('span');
+          label.textContent = ctx.data.title;
+          ctx.replaceWith(label);
+        },
+      },
+    })($facets),
     // Product List
     provider.render(SearchResults, {
       routeProduct: (product) => getProductLink(product.urlKey, product.sku),
@@ -184,6 +194,74 @@ export default async function decorate(block) {
     })($productList),
   ]);
 
+  // Accordion behavior for facet sidebar (matches filter design)
+  const collapsedFacets = new Set();
+  let defaultCollapseApplied = false;
+
+  const getFacetTitle = (header) => header.childNodes[0]?.textContent?.trim()
+    || header.textContent.trim();
+
+  const expandFacetLists = () => {
+    $facets.querySelectorAll('.product-discovery-facet > button').forEach((btn) => {
+      if (/show more/i.test(btn.textContent || '')) {
+        btn.click();
+      }
+    });
+  };
+
+  const syncFacetAccordions = () => {
+    const facets = [...$facets.querySelectorAll('.product-discovery-facet')];
+
+    // First load: keep the first facet open, collapse the rest (like the design)
+    if (!defaultCollapseApplied && facets.length > 1) {
+      facets.slice(1).forEach((facet) => {
+        const header = facet.querySelector('.product-discovery-facet__header');
+        if (header) collapsedFacets.add(getFacetTitle(header));
+      });
+      defaultCollapseApplied = true;
+    }
+
+    facets.forEach((facet) => {
+      const header = facet.querySelector('.product-discovery-facet__header');
+      if (!header) return;
+
+      const title = getFacetTitle(header);
+      const collapsed = collapsedFacets.has(title);
+      facet.classList.toggle('product-discovery-facet--collapsed', collapsed);
+      header.setAttribute('role', 'button');
+      header.setAttribute('tabindex', '0');
+      header.setAttribute('aria-expanded', String(!collapsed));
+    });
+  };
+
+  $facets.addEventListener('click', (event) => {
+    const header = event.target.closest('.product-discovery-facet__header');
+    if (!header || !$facets.contains(header)) return;
+
+    const facet = header.closest('.product-discovery-facet');
+    if (!facet) return;
+
+    const title = getFacetTitle(header);
+    const collapsed = facet.classList.toggle('product-discovery-facet--collapsed');
+    header.setAttribute('aria-expanded', String(!collapsed));
+    if (collapsed) collapsedFacets.add(title);
+    else collapsedFacets.delete(title);
+  });
+
+  $facets.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const header = event.target.closest('.product-discovery-facet__header');
+    if (!header || !$facets.contains(header)) return;
+    event.preventDefault();
+    header.click();
+  });
+
+  const facetsObserver = new MutationObserver(() => {
+    expandFacetLists();
+    syncFacetAccordions();
+  });
+  facetsObserver.observe($facets, { childList: true, subtree: true });
+
   // Listen for search results (event is fired before the block is rendered; eager: true)
   events.on('search/result', (payload) => {
     const totalCount = payload.result?.totalCount || 0;
@@ -201,6 +279,12 @@ export default async function decorate(block) {
     } else {
       $viewFacets.querySelector('button').removeAttribute('data-count');
     }
+
+    // Facet DOM updates after Preact re-render
+    requestAnimationFrame(() => {
+      expandFacetLists();
+      syncFacetAccordions();
+    });
   }, { eager: true });
 
   // Listen for search results (event is fired after the block is rendered; eager: false)

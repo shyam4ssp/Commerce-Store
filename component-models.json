@@ -52,6 +52,11 @@
     "id": "section",
     "fields": [
       {
+        "component": "text",
+        "name": "sectionname",
+        "label": "Section Name"
+      },
+      {
         "component": "multiselect",
         "name": "style",
         "label": "Style",
@@ -260,6 +265,31 @@
     ]
   },
   {
+    "id": "category-cards",
+    "fields": [
+      {
+        "component": "select",
+        "name": "classes",
+        "label": "Variant",
+        "valueType": "string",
+        "options": [
+          {
+            "name": "Default",
+            "value": ""
+          },
+          {
+            "name": "Carousel",
+            "value": "carousel"
+          },
+          {
+            "name": "Machine",
+            "value": "machine"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "id": "category-card",
     "fields": [
       {
@@ -276,10 +306,11 @@
         "label": "Image Alt"
       },
       {
-        "component": "aem-content",
-        "valueType": "string",
-        "name": "link",
-        "label": "Link"
+        "component": "richtext",
+        "name": "text",
+        "value": "",
+        "label": "Link",
+        "valueType": "string"
       }
     ]
   },

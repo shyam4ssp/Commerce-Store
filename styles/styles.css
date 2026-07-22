@@ -477,7 +477,7 @@ main > .section {
 }
 
 main > .section > div {
-  max-width: 1400px;
+  max-width: 1464px;
   margin: auto;
   padding: 0 var(--spacing-medium);
 }

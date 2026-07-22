@@ -148,6 +148,7 @@
           "filter": "category-cards",
           "plugins": {
             "da": {
+              "name": "category-cards",
               "rows": 1,
               "columns": 2
             }
@@ -157,13 +158,27 @@
           "title": "Category Cards Carousel",
           "id": "category-cards-carousel",
           "model": "category-cards",
-          "filter": "category-cards"
+          "filter": "category-cards",
+          "plugins": {
+            "da": {
+              "name": "category-cards (carousel)",
+              "rows": 1,
+              "columns": 2
+            }
+          }
         },
         {
           "title": "Machine Category Cards",
           "id": "category-cards-machine",
           "model": "category-cards",
-          "filter": "category-cards"
+          "filter": "category-cards",
+          "plugins": {
+            "da": {
+              "name": "category-cards (machine)",
+              "rows": 1,
+              "columns": 2
+            }
+          }
         },
         {
           "title": "Category Card",
@@ -183,8 +198,8 @@
                   "selector": "div:nth-child(1)>picture>img[alt]"
                 },
                 {
-                  "name": "link",
-                  "selector": "div:nth-child(2)>a[href]"
+                  "name": "text",
+                  "selector": "div:nth-child(2)"
                 }
               ]
             }
