@@ -4,9 +4,21 @@
   position: relative;
 }
 
-.testimonials .testimonials-header {
-  margin-bottom: var(--spacing-medium);
-  padding-right: 9rem;
+.testimonials-container > div h2 {
+  margin-top: 0;
+  margin-bottom: .5rem;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+.testimonials-container > div p{
+  margin-block: 0;
+}
+
+.testimonials-wrapper {
+  margin-top: 4rem;
 }
 
 .testimonials .testimonials-title-wrap :is(h1, h2, h3, h4, h5, h6, p) {
@@ -25,7 +37,7 @@
 
 .testimonials .scroll-carousel-nav {
   position: absolute;
-  top: 0;
+  top: -9rem;
   right: 0;
   display: flex;
   gap: 10px;
@@ -69,13 +81,13 @@
   width: 4.3rem;
   height: 4.3rem;
   border-radius: 50%;
-  background: var(--color-somero-pink);
+  background: var(--theme-purple-dark);
   color: var(--background-color);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 400;
   flex-shrink: 0;
 }
 
@@ -88,6 +100,7 @@
   margin: 0 0 2rem;
   font-size: 1.6rem;
   line-height: normal;
+  color: var(--theme-black);
 }
 
 .testimonials .testimonials-quote p {
@@ -115,26 +128,35 @@
   line-height: 1;
 }
 
-.testimonials .testimonials-cta {
+.testimonials-container > div:last-child {
   display: flex;
   justify-content: center;
   margin-top: var(--spacing-big);
+  text-align: center;
 }
 
-.testimonials .testimonials-cta .button {
+.testimonials-container > div:last-child a {
   border-radius: 0;
   background: var(--color-somero-pink);
   border: 0;
   color: var(--background-color);
   font-family: var(--type-somero-font-family);
   font-size: 1.8rem;
-  font-weight: 700;
+  font-weight: 400;
   line-height: normal;
   text-transform: uppercase;
   padding: 1.4rem 5rem;
   text-decoration: none;
+  transition: .4s linear;
 }
 
-.testimonials .testimonials-cta .button:hover {
-  background: #a62878;
+.testimonials-container > div:last-child a:hover {
+  background: #8C1A68;
+}
+
+
+@media (min-width: 900px) {
+  .testimonials .testimonials-list {
+    gap: 4rem;
+  }
 }

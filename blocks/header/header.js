@@ -222,26 +222,6 @@ export default async function decorate(block) {
 
   const navTools = nav.querySelector('.nav-tools');
 
-  /** Wishlist */
-  const wishlist = document.createRange().createContextualFragment(`
-     <div class="wishlist-wrapper nav-tools-wrapper">
-       <button type="button" class="nav-wishlist-button" aria-label="Wishlist"></button>
-       <div class="wishlist-panel nav-tools-panel"></div>
-     </div>
-   `);
-
-  navTools.append(wishlist);
-
-  const wishlistButton = navTools.querySelector('.nav-wishlist-button');
-  wishlistButton.closest('.wishlist-wrapper').classList.add('nav-tool-hidden');
-
-  const wishlistMeta = getMetadata('wishlist');
-  const wishlistPath = wishlistMeta ? new URL(wishlistMeta, window.location).pathname : '/wishlist';
-
-  wishlistButton.addEventListener('click', () => {
-    window.location.href = rootLink(wishlistPath);
-  });
-
   /** Mini Cart */
   const excludeMiniCartFromPaths = ['/checkout'];
 
@@ -257,6 +237,27 @@ export default async function decorate(block) {
    `);
 
   navTools.append(minicart);
+
+  /** Wishlist */
+  const wishlist = document.createRange().createContextualFragment(`
+     <div class="wishlist-wrapper nav-tools-wrapper">
+       <button type="button" class="nav-wishlist-button nav-tool-button" aria-label="Wish list">
+         <span class="nav-tool-icon nav-wishlist-icon" aria-hidden="true"></span>
+         <span class="nav-tool-label">Wish list</span>
+       </button>
+     </div>
+   `);
+
+  navTools.append(wishlist);
+
+  const wishlistButton = navTools.querySelector('.nav-wishlist-button');
+
+  const wishlistMeta = getMetadata('wishlist');
+  const wishlistPath = wishlistMeta ? new URL(wishlistMeta, window.location).pathname : '/wishlist';
+
+  wishlistButton.addEventListener('click', () => {
+    window.location.href = rootLink(wishlistPath);
+  });
 
   const minicartPanel = navTools.querySelector('.minicart-panel');
 
@@ -475,17 +476,6 @@ export default async function decorate(block) {
 
   searchButton.addEventListener('click', () => toggleSearch(!searchPanel.classList.contains('nav-tools-panel--show')));
 
-  const languageSelector = document.createRange().createContextualFragment(`
-    <div class="language-wrapper nav-tools-wrapper">
-      <button type="button" class="nav-language-button nav-tool-button" aria-label="Language">
-        <span class="nav-tool-icon nav-language-icon" aria-hidden="true"></span>
-        <span class="nav-tool-label">English</span>
-        <span class="nav-tool-chevron" aria-hidden="true"></span>
-      </button>
-    </div>
-  `);
-  navTools.append(languageSelector);
-
   navTools.querySelector('.nav-search-button').addEventListener('click', () => {
     if (isDesktop.matches) {
       toggleAllNavSections(navSections);
@@ -589,5 +579,17 @@ export default async function decorate(block) {
     navSections,
     () => !isDesktop.matches && toggleMenu(nav, navSections, false),
   );
+  // Order: Cart → Wish list → Register / Sign In → Language
   renderAuthDropdown(navTools);
+
+  const languageSelector = document.createRange().createContextualFragment(`
+    <div class="language-wrapper nav-tools-wrapper">
+      <button type="button" class="nav-language-button nav-tool-button" aria-label="Language">
+        <span class="nav-tool-icon nav-language-icon" aria-hidden="true"></span>
+        <span class="nav-tool-label">English</span>
+        <span class="nav-tool-chevron" aria-hidden="true"></span>
+      </button>
+    </div>
+  `);
+  navTools.append(languageSelector);
 }

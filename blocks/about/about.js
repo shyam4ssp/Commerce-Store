@@ -6,6 +6,9 @@ export default function decorate(block) {
   const section = document.createElement('div');
   section.className = 'about-inner';
 
+  const panelwrapper = document.createElement('div');
+  panelwrapper.className = 'panel-wrapper';
+
   const background = document.createElement('div');
   background.className = 'about-background';
 
@@ -61,8 +64,10 @@ export default function decorate(block) {
     section.append(background);
   }
 
+  section.append(panelwrapper);
+
   panel.append(content);
-  section.append(panel);
+  panelwrapper.append(panel);
 
   block.textContent = '';
   block.append(section);
