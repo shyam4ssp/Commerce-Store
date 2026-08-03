@@ -180,7 +180,6 @@ main > .section .carousel-wrapper {
     border-radius: 0;
     background-color: var(--primary-banner-btn-bg);
     color: var(--primary-banner-btn-color);
-    border: 0;
     font-family: var(--type-somero-font-family);
     font-size: 1.8rem;
     font-style: normal;

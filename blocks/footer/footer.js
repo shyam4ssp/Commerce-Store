@@ -10,8 +10,8 @@ import createModal from '../modal/modal.js';
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
 
-import { Newsletter } from './../../dropins/newsletter/containers/Newsletter.js';
-import { render } from './../../dropins/newsletter/render.js';
+import { Newsletter } from '../../dropins/newsletter/containers/Newsletter.js';
+import { render } from '../../dropins/newsletter/render.js';
 
 /**
  * Toggles all storeSelector sections
@@ -174,6 +174,6 @@ export default async function decorate(block) {
 
   render(
     Newsletter,
-    document.querySelector('#subscribe')
+    document.querySelector('#subscribe'),
   );
 }

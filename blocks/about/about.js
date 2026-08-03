@@ -1,4 +1,5 @@
-import { createOptimizedPicture } from '../../scripts/aem.js';
+/* eslint-disable no-unused-vars */
+// import { createOptimizedPicture } from '../../scripts/aem.js';
 
 export default function decorate(block) {
   const rows = [...block.children];
@@ -26,16 +27,13 @@ export default function decorate(block) {
       case 'backgroundimage': {
         const imageUrl = valueCell.textContent.trim();
         const backgroundImageAlt = valueCell.nextElementSibling?.textContent.trim() || '';
-      
         if (imageUrl) {
           const img = document.createElement('img');
           img.src = imageUrl;
           img.alt = backgroundImageAlt || 'Background Image';
           img.loading = 'lazy';
-      
           background.append(img);
         }
-      
         break;
       }
 

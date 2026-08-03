@@ -14,7 +14,7 @@
 :root, .dropin-design {
   /* Adobe Commerce Dropin design tokens */
   --color-brand-300: #6d6d6d;
-  --color-brand-500: #454545;
+  --color-brand-500: var(--theme-purple);
   --color-brand-600: #383838;
   --color-brand-700: #2b2b2b;
   --color-neutral-50: #fff;
@@ -41,7 +41,7 @@
   --color-alert-800: #c35050;
   --color-button-active: var(--color-brand-700);
   --color-button-focus: var(--color-neutral-400);
-  --color-button-hover: var(--color-brand-600);
+  --color-button-hover: #8C1A68;
   --color-action-button-active: var(--color-neutral-50);
   --color-action-button-hover: var(--color-neutral-300);
   --color-opacity-16: rgb(255 255 255 / 16%);
@@ -63,7 +63,7 @@
   --grid-5-gutters: 24px;
   --shape-border-radius-1: 3px;
   --shape-border-radius-2: 8px;
-  --shape-border-radius-3: 24px;
+  --shape-border-radius-3: 0;
   --shape-border-width-1: 1px;
   --shape-border-width-2: 1.5px;
   --shape-border-width-3: 2px;
@@ -145,10 +145,6 @@
   --theme-purple-banner-bg: rgb(200 50 147 / 80%);
   --black: #000;
   --white: #fff;
-
-  --shape-border-radius-3: 0;
-  --color-brand-500: var(--theme-purple);
-  --color-button-hover: #8C1A68;
 }
 
 *, *::before, *::after {
@@ -168,6 +164,7 @@ html {
     font-size: calc(6px + (10 - 6)*((100vw - 1200px)/(1920 - 1200)));
   }
 }
+
 @media screen and (min-width: 1800px) {
   html {
     font-size: 10px;

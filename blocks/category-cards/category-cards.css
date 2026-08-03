@@ -103,7 +103,6 @@ main > .category-cards-container p {
   text-decoration: none;
   color: var(--color-somero-black);
   position: static;
-  text-decoration: none;
   text-transform: uppercase;
 }
 
