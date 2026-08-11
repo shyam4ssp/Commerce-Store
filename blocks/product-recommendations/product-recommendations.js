@@ -183,6 +183,8 @@ export default async function decorate(block) {
         ? { sku: resolvedSku, ...(resolvedPrice != null && { price: resolvedPrice }) }
         : undefined;
 
+      const isLoggedIn = getConfigValue('headers.cs.isLoggedIn');
+
       await Promise.all([
         provider.render(ProductList, {
           routeProduct: createProductLink,
@@ -191,69 +193,109 @@ export default async function decorate(block) {
           userViewHistory: context.userViewHistory,
           userPurchaseHistory: context.userPurchaseHistory,
           slots: {
+            Title: (ctx) => {
+              const title = document.createElement('div');
+              title.textContent = ctx.item.name;
+              ctx.replaceWith(title);
+            },
+            Price: (ctx) => {
+              if (isLoggedIn) {
+                const element = document.createElement('div');
+                element.className = 'dropin-product-item-card__price';
+                element.innerHTML = `
+                  <span class="dropin-product-item-card__price-value">${ctx.item.price.toFixed(2)}</span>
+                `;
+                ctx.replaceWith(element);
+              } else {
+                const element = document.createElement('div');
+                element.className = 'dropin-product-item-card__price';
+                element.innerHTML = `
+                  <a href="/customer/login" class="footer__button--add-to-cart-text">Login to see the price <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_1430_653)"><path d="M7.5 5L12.5 10L7.5 15" stroke="#C83293" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_1430_653"><rect width="20" height="20" fill="white"/></clipPath></defs></svg></a>
+                `;
+                ctx.replaceWith(element);
+              }
+            },
+            Sku: (ctx) => {
+              const element = document.createElement('div');
+              element.className = 'dropin-product-item-card__sku';
+              element.innerHTML = `
+                <span class="dropin-product-item-card__sku-label">SKU:</span>
+                <span class="dropin-product-item-card__sku-value">${ctx.item.sku}</span>
+              `;
+              ctx.replaceWith(element);
+            },
             Footer: (ctx) => {
               const wrapper = document.createElement('div');
               wrapper.className = 'footer__wrapper';
 
-              const addToCart = document.createElement('div');
-              addToCart.className = 'footer__button--add-to-cart';
-              wrapper.appendChild(addToCart);
+              if (isLoggedIn) {
+                const addToCart = document.createElement('div');
+                addToCart.className = 'footer__button--add-to-cart';
+                wrapper.appendChild(addToCart);
 
-              if (ctx.item.itemType === 'SimpleProductView') {
-                // Add to Cart Button
-                UI.render(Button, {
-                  children: labels.Global?.AddProductToCart,
-                  icon: Icon({ source: 'Cart' }),
-                  onClick: ctx.item.inStock
-                    ? (event) => {
-                      cartApi.addProductsToCart([
-                        { sku: ctx.item.sku, quantity: 1 },
-                      ]);
-                      // Prevent the click event from bubbling up to the parent span
-                      // to avoid triggering the recs-item-click event
-                      event.stopPropagation();
-                      // Publish ACDL event for add to cart click
-                      const recommendationUnit = recommendationsData?.find(
-                        (unit) => unit.items?.some(
-                          (unitItem) => unitItem.sku === ctx.item.sku,
-                        ),
-                      );
-                      publishRecsItemAddToCartClick({
-                        recommendationUnit,
-                        pagePlacement: 'product-list',
-                        yOffsetTop: addToCart.getBoundingClientRect().top ?? 0,
-                        yOffsetBottom:
-                          addToCart.getBoundingClientRect().bottom ?? 0,
-                        productId: ctx.index,
-                      });
-                    }
-                    : undefined,
-                  variant: 'primary',
-                  disabled: !ctx.item.inStock,
-                })(addToCart);
+                if (ctx.item.itemType === 'SimpleProductView') {
+                  // Add to Cart Button
+                  UI.render(Button, {
+                    children: labels.Global?.AddProductToCart,
+                    icon: Icon({ source: 'Cart' }),
+                    onClick: ctx.item.inStock
+                      ? (event) => {
+                        cartApi.addProductsToCart([
+                          { sku: ctx.item.sku, quantity: 1 },
+                        ]);
+                        // Prevent the click event from bubbling up to the parent span
+                        // to avoid triggering the recs-item-click event
+                        event.stopPropagation();
+                        // Publish ACDL event for add to cart click
+                        const recommendationUnit = recommendationsData?.find(
+                          (unit) => unit.items?.some(
+                            (unitItem) => unitItem.sku === ctx.item.sku,
+                          ),
+                        );
+                        publishRecsItemAddToCartClick({
+                          recommendationUnit,
+                          pagePlacement: 'product-list',
+                          yOffsetTop: addToCart.getBoundingClientRect().top ?? 0,
+                          yOffsetBottom:
+                            addToCart.getBoundingClientRect().bottom ?? 0,
+                          productId: ctx.index,
+                        });
+                      }
+                      : undefined,
+                    variant: 'primary',
+                    disabled: !ctx.item.inStock,
+                  })(addToCart);
+                } else {
+                  // Select Options Button
+                  UI.render(Button, {
+                    children:
+                      labels.Global?.SelectProductOptions,
+                    href: createProductLink(ctx.item),
+                    variant: 'tertiary',
+                  })(addToCart);
+                }
+
+                // Wishlist Button
+                const $wishlistToggle = document.createElement('div');
+                $wishlistToggle.classList.add('footer__button--wishlist-toggle');
+
+                // Render Icon
+                wishlistRender.render(WishlistToggle, {
+                  product: ctx.item,
+                })($wishlistToggle);
+
+                // Append to Cart Item
+                wrapper.appendChild($wishlistToggle);
+                ctx.replaceWith(wrapper);
               } else {
-                // Select Options Button
-                UI.render(Button, {
-                  children:
-                    labels.Global?.SelectProductOptions,
-                  href: createProductLink(ctx.item),
-                  variant: 'tertiary',
-                })(addToCart);
+                wrapper.className = 'footer__wrapper';
+                wrapper.innerHTML = `
+                  <div class="footer__button--add-to-cart">
+                   
+                  </div>
+                `;
+                ctx.replaceWith(wrapper);
               }
-
-              // Wishlist Button
-              const $wishlistToggle = document.createElement('div');
-              $wishlistToggle.classList.add('footer__button--wishlist-toggle');
-
-              // Render Icon
-              wishlistRender.render(WishlistToggle, {
-                product: ctx.item,
-              })($wishlistToggle);
-
-              // Append to Cart Item
-              wrapper.appendChild($wishlistToggle);
-
-              ctx.replaceWith(wrapper);
             },
 
             Thumbnail: (ctx) => {

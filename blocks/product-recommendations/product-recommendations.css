@@ -1,3 +1,7 @@
+.recommendations-product-list__heading {
+    display: none;
+}
+
 .product-recommendations .scrollable {
     overflow-x: scroll;
     scroll-snap-type: x mandatory;
@@ -11,8 +15,31 @@
     margin: 0;
 }
 
+.product-recommendations-container > .default-content-wrapper {
+    padding-bottom: 2.5rem;
+}
+
+.product-recommendations-container > .default-content-wrapper h2 {
+    margin-top: 0;
+    margin-bottom: .5rem;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: normal;
+    text-transform: uppercase;
+}
+
+.product-recommendations-container > .default-content-wrapper p {
+    margin-block: 0;
+}
+
 .product-recommendations .product-grid-item img {
     width: 100%;
+}
+
+.dropin-product-item-card__title a {
+    color: var(--color-somero-black);
+    font-size: 1.8rem;
+    font-weight: 700;
 }
 
 .product-recommendations .product-grid .product-grid-item a {
@@ -60,4 +87,59 @@
     display: flex;
     gap: 10px;
     align-items: center;
+}
+
+.recommendations-carousel__content {
+    width: 100%;
+    gap: 13px;
+}
+
+.recommendations-carousel__content > * {
+    width: 25%;
+    border: 1px solid var(--color-neutral-200);
+    background: var(--color-neutral-0);
+    padding: 2rem;
+    padding-bottom: 4rem;
+}
+
+.recommendations-carousel__content .footer__button--add-to-cart-text {
+    color: var(--color-somero-pink);
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+}
+
+.dropin-product-item-card__content {
+    padding: 0;
+}
+
+.recommendations-product-list .dropin-product-item-card {
+    margin: 0;
+    width: 100%;
+}
+
+.dropin-product-item-card__title {
+    padding-top: 2rem;
+    padding-bottom: 1.2rem;
+}
+
+.dropin-product-item-card__sku .dropin-product-item-card__sku {
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--color-somero-black);
+    padding-bottom: 1.2rem;
+}
+
+.dropin-product-item-card__sku-label {
+    font-weight: 700;
+}
+
+.dropin-product-item-card__price {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 2.6rem;
+}
+
+.dropin-product-item-card__price .dropin-price--default {
+    color: var(--color-somero-black);
 }

@@ -71,7 +71,29 @@
   margin-top: var(--spacing-xsmall);
 }
 
+.pdp-header__title {
+  color: var(--color-somero-black);
+  font-size: 26rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
+.pdp-header__sku {
+  color: var(--color-somero-black);
+  font-size: 1.4rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  text-transform: uppercase;
+}
+
 @media (min-width: 900px) {
+  .pdp-header__title {
+    font-size: 4rem;
+  }
+  
   .product-details__wrapper {
     grid-template-columns: repeat(var(--grid-3-columns), 1fr);
     column-gap: var(--grid-3-gutters);
