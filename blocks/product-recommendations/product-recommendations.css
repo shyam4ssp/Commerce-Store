@@ -100,6 +100,7 @@
     background: var(--color-neutral-0);
     padding: 2rem;
     padding-bottom: 4rem;
+    background-color: #fff;
 }
 
 .recommendations-carousel__content .footer__button--add-to-cart-text {

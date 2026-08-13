@@ -24,6 +24,7 @@ import ProductDescription from '@dropins/storefront-pdp/containers/ProductDescri
 import ProductAttributes from '@dropins/storefront-pdp/containers/ProductAttributes.js';
 import ProductGallery from '@dropins/storefront-pdp/containers/ProductGallery.js';
 import ProductGiftCardOptions from '@dropins/storefront-pdp/containers/ProductGiftCardOptions.js';
+import { getConfigValue } from '@dropins/tools/lib/aem/configs.js';
 
 // Libs
 import {
@@ -31,12 +32,15 @@ import {
   setJsonLd,
   fetchPlaceholders,
   getProductLink,
+  checkIsAuthenticated,
 } from '../../scripts/commerce.js';
 
 // Initializers
 import { IMAGES_SIZES } from '../../scripts/initializers/pdp.js';
 import '../../scripts/initializers/cart.js';
 import '../../scripts/initializers/wishlist.js';
+
+const SHORT_DESCRIPTION_PREVIEW_LENGTH = 160;
 
 /**
  * Checks if the page has prerendered product JSON-LD data
@@ -81,12 +85,265 @@ function formatNumericAttributeValue(value) {
   return new Intl.NumberFormat(document.documentElement.lang).format(Number(trimmed));
 }
 
+/**
+ * Reads a product attribute value by name (case-insensitive).
+ * @param {Object} product
+ * @param {string[]} names
+ * @returns {string|number|undefined}
+ */
+function getAttributeValue(product, names) {
+  const attrs = product?.attributes || [];
+  const match = attrs.find((attr) => names.some(
+    (name) => attr.name?.toLowerCase() === name.toLowerCase(),
+  ));
+  return match?.value;
+}
+
+/**
+ * Returns true when the shopper is authenticated (cookie or ACO header).
+ * @returns {boolean}
+ */
+function isShopperAuthenticated() {
+  const headerFlag = getConfigValue('headers.cs.isLoggedIn');
+  return checkIsAuthenticated()
+    || headerFlag === true
+    || headerFlag === 'true';
+}
+
+/**
+ * Builds rating markup when review data is available on the product.
+ * @param {Object} product
+ * @param {Object} labels
+ * @returns {HTMLElement|null}
+ */
+function buildRating(product, labels) {
+  const reviewCount = Number(
+    getAttributeValue(product, ['review_count', 'reviews_count', 'rating_count']) ?? NaN,
+  );
+  if (!Number.isFinite(reviewCount) || reviewCount < 0) return null;
+
+  const reviewsLabel = labels.Global?.Reviews || 'Reviews';
+  const rating = document.createElement('div');
+  rating.className = 'product-details__rating';
+
+  const stars = document.createElement('span');
+  stars.className = 'product-details__stars';
+  stars.setAttribute('aria-hidden', 'true');
+  stars.textContent = '★★★★★';
+
+  const count = document.createElement('span');
+  count.className = 'product-details__rating-count';
+  count.textContent = `${reviewCount} ${reviewsLabel}`;
+
+  rating.append(stars, count);
+  return rating;
+}
+
+/**
+ * Builds stock availability badge.
+ * @param {boolean} inStock
+ * @param {Object} labels
+ * @returns {HTMLElement}
+ */
+function buildStockBadge(inStock, labels) {
+  const badge = document.createElement('span');
+  badge.className = `product-details__stock-badge product-details__stock-badge--${
+    inStock ? 'in-stock' : 'out-of-stock'
+  }`;
+  badge.textContent = inStock
+    ? (labels.Global?.InStock || 'In Stock')
+    : (labels.Global?.OutOfStock || 'Out of Stock');
+  return badge;
+}
+
+/**
+ * Enhances short description with a More... toggle matching the Figma PDP.
+ * @param {Element} container
+ * @param {Object} labels
+ */
+function enhanceShortDescription(container, labels) {
+  const description = container.querySelector('.pdp-short-description');
+  if (!description || description.dataset.enhanced === 'true') return;
+
+  const fullText = description.textContent?.trim() || '';
+  if (!fullText || fullText.length <= SHORT_DESCRIPTION_PREVIEW_LENGTH) {
+    description.dataset.enhanced = 'true';
+    return;
+  }
+
+  const moreLabel = labels.Global?.More || 'More...';
+  const lessLabel = labels.Global?.Less || 'Less';
+  const preview = `${fullText.slice(0, SHORT_DESCRIPTION_PREVIEW_LENGTH).trimEnd()}…`;
+
+  description.dataset.enhanced = 'true';
+  description.dataset.expanded = 'false';
+  description.textContent = preview;
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'product-details__more-toggle';
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.innerHTML = `<span>${moreLabel}</span>`;
+
+  toggle.addEventListener('click', () => {
+    const expanded = description.dataset.expanded === 'true';
+    description.dataset.expanded = String(!expanded);
+    description.textContent = expanded ? preview : fullText;
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    toggle.querySelector('span').textContent = expanded ? moreLabel : lessLabel;
+    description.append(' ', toggle);
+  });
+
+  description.append(' ', toggle);
+}
+
+/**
+ * Builds the reviews tab panel content from available product review attributes.
+ * @param {Object|null} product
+ * @param {Object} labels
+ * @returns {HTMLElement}
+ */
+function buildReviewsPanel(product, labels) {
+  const panel = document.createElement('div');
+  panel.className = 'product-details__reviews';
+
+  const reviewCount = Number(
+    getAttributeValue(product, ['review_count', 'reviews_count', 'rating_count']) ?? 0,
+  );
+  const ratingValue = Number(
+    getAttributeValue(product, ['rating_summary', 'rating', 'average_rating']) ?? NaN,
+  );
+
+  if (Number.isFinite(reviewCount) && reviewCount > 0) {
+    const summary = document.createElement('div');
+    summary.className = 'product-details__reviews-summary';
+
+    const stars = document.createElement('span');
+    stars.className = 'product-details__stars';
+    stars.setAttribute('aria-hidden', 'true');
+    stars.textContent = '★★★★★';
+
+    const meta = document.createElement('p');
+    meta.className = 'product-details__reviews-meta';
+    const reviewsLabel = labels.Global?.Reviews || 'Reviews';
+    meta.textContent = Number.isFinite(ratingValue)
+      ? `${ratingValue} / 5 · ${reviewCount} ${reviewsLabel}`
+      : `${reviewCount} ${reviewsLabel}`;
+
+    summary.append(stars, meta);
+    panel.append(summary);
+  } else {
+    const empty = document.createElement('p');
+    empty.className = 'product-details__reviews-empty';
+    empty.textContent = labels.Global?.NoReviews || 'No reviews yet for this product.';
+    panel.append(empty);
+  }
+
+  return panel;
+}
+
+/**
+ * Wires Product Description / Specifications / Reviews tab interactions.
+ * @param {Element} tabsRoot
+ */
+function initProductTabs(tabsRoot) {
+  const buttons = [...tabsRoot.querySelectorAll('[role="tab"]')];
+  const panels = [...tabsRoot.querySelectorAll('[role="tabpanel"]')];
+
+  const activate = (tabId) => {
+    buttons.forEach((button) => {
+      const selected = button.dataset.tab === tabId;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+    });
+
+    panels.forEach((panel) => {
+      const selected = panel.dataset.tabPanel === tabId;
+      panel.classList.toggle('is-active', selected);
+      panel.hidden = !selected;
+    });
+  };
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => activate(button.dataset.tab));
+    button.addEventListener('keydown', (event) => {
+      const index = buttons.indexOf(button);
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        const next = buttons[(index + 1) % buttons.length];
+        next.focus();
+        activate(next.dataset.tab);
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        const prev = buttons[(index - 1 + buttons.length) % buttons.length];
+        prev.focus();
+        activate(prev.dataset.tab);
+      }
+    });
+  });
+
+  activate(buttons.find((button) => button.classList.contains('is-active'))?.dataset.tab || 'description');
+}
+
+/**
+ * Builds the requisition list control for authenticated shoppers.
+ * @param {Object} labels
+ * @returns {HTMLElement}
+ */
+function buildRequisitionControl(labels) {
+  const requisition = document.createElement('div');
+  requisition.className = 'product-details__requisition';
+
+  const requisitionBtn = document.createElement('button');
+  requisitionBtn.type = 'button';
+  requisitionBtn.className = 'product-details__requisition-toggle';
+  requisitionBtn.setAttribute('aria-haspopup', 'listbox');
+  requisitionBtn.setAttribute('aria-expanded', 'false');
+
+  const requisitionText = document.createElement('span');
+  requisitionText.textContent = labels.Global?.AddToRequisitionList || 'Add to Requisition List';
+  requisitionBtn.append(requisitionText);
+
+  const requisitionMenu = document.createElement('ul');
+  requisitionMenu.className = 'product-details__requisition-menu';
+  requisitionMenu.hidden = true;
+  requisitionMenu.setAttribute('role', 'listbox');
+
+  const createItem = document.createElement('li');
+  createItem.setAttribute('role', 'option');
+  const createLink = document.createElement('a');
+  createLink.href = rootLink('/customer/account/requisition_list/');
+  createLink.textContent = labels.Global?.CreateRequisitionList || 'Create New Requisition List';
+  createItem.append(createLink);
+  requisitionMenu.append(createItem);
+
+  requisitionBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const open = requisitionMenu.hidden;
+    requisitionMenu.hidden = !open;
+    requisitionBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  requisition.append(requisitionBtn, requisitionMenu);
+  return requisition;
+}
+
 export default async function decorate(block) {
   const eventProduct = events.lastPayload('pdp/data') ?? null;
   // bug: the pdp sends an object with event data even if product is not found.
   const product = eventProduct?.sku ? eventProduct : null;
 
   const labels = await fetchPlaceholders();
+  const loginPriceLabel = labels.Global?.LoginToSeePrice || 'Login to see the price';
+  const qtyLabel = labels.Global?.Quantity || 'Qty:';
+  const wishlistLabel = labels.Global?.AddToWishList || 'Add to Wish List';
+  const wishlistedLabel = labels.Global?.InWishList || 'In Wish List';
+  const descriptionTabLabel = labels.Global?.ProductDescription || 'Product Description';
+  const specificationsTabLabel = labels.Global?.Specifications || 'Specifications';
+  const reviewsTabLabel = labels.Global?.Reviews || 'Reviews';
 
   // Read itemUid from URL
   const urlParams = new URLSearchParams(window.location.search);
@@ -98,7 +355,7 @@ export default async function decorate(block) {
   // State to track if the current product/variant is out of stock
   let isOutOfStock = false;
 
-  // Layout
+  // Layout — buy box stays in the right column; tabs are full-width below (Figma)
   const fragment = document.createRange().createContextualFragment(`
     <div class="product-details__alert"></div>
     <div class="product-details__wrapper">
@@ -107,20 +364,49 @@ export default async function decorate(block) {
       </div>
       <div class="product-details__right-column">
         <div class="product-details__header"></div>
+        <div class="product-details__meta">
+          <div class="product-details__rating-slot"></div>
+          <div class="product-details__stock"></div>
+        </div>
         <div class="product-details__price"></div>
         <div class="product-details__gallery"></div>
         <div class="product-details__short-description"></div>
         <div class="product-details__gift-card-options"></div>
+        <div class="product-details__guest-cta">
+          <a class="product-details__login-price" href="${rootLink('/customer/login')}">${loginPriceLabel}</a>
+        </div>
         <div class="product-details__configuration">
           <div class="product-details__options"></div>
-          <div class="product-details__quantity"></div>
-          <div class="product-details__buttons">
+          <div class="product-details__purchase">
+            <div class="product-details__quantity-wrap">
+              <span class="product-details__quantity-label">${qtyLabel}</span>
+              <div class="product-details__quantity"></div>
+            </div>
             <div class="product-details__buttons__add-to-cart"></div>
+          </div>
+          <div class="product-details__secondary-actions">
             <div class="product-details__buttons__add-to-wishlist"></div>
+            <div class="product-details__requisition-slot"></div>
           </div>
         </div>
-        <div class="product-details__description"></div>
-        <div class="product-details__attributes"></div>
+      </div>
+    </div>
+    <div class="product-details__tabs" data-tabs>
+      <div class="product-details__tablist" role="tablist" aria-label="${descriptionTabLabel}">
+        <button type="button" class="product-details__tab is-active" role="tab" id="pdp-tab-description" data-tab="description" aria-controls="pdp-panel-description" aria-selected="true">${descriptionTabLabel}</button>
+        <button type="button" class="product-details__tab" role="tab" id="pdp-tab-specifications" data-tab="specifications" aria-controls="pdp-panel-specifications" aria-selected="false" tabindex="-1">${specificationsTabLabel}</button>
+        <button type="button" class="product-details__tab" role="tab" id="pdp-tab-reviews" data-tab="reviews" aria-controls="pdp-panel-reviews" aria-selected="false" tabindex="-1">${reviewsTabLabel}</button>
+      </div>
+      <div class="product-details__tabpanels">
+        <div class="product-details__tabpanel is-active" role="tabpanel" id="pdp-panel-description" data-tab-panel="description" aria-labelledby="pdp-tab-description">
+          <div class="product-details__description"></div>
+        </div>
+        <div class="product-details__tabpanel" role="tabpanel" id="pdp-panel-specifications" data-tab-panel="specifications" aria-labelledby="pdp-tab-specifications" hidden>
+          <div class="product-details__attributes"></div>
+        </div>
+        <div class="product-details__tabpanel" role="tabpanel" id="pdp-panel-reviews" data-tab-panel="reviews" aria-labelledby="pdp-tab-reviews" hidden>
+          <div class="product-details__reviews-slot"></div>
+        </div>
       </div>
     </div>
   `);
@@ -128,6 +414,8 @@ export default async function decorate(block) {
   const $alert = fragment.querySelector('.product-details__alert');
   const $gallery = fragment.querySelector('.product-details__gallery');
   const $header = fragment.querySelector('.product-details__header');
+  const $ratingSlot = fragment.querySelector('.product-details__rating-slot');
+  const $stock = fragment.querySelector('.product-details__stock');
   const $price = fragment.querySelector('.product-details__price');
   const $galleryMobile = fragment.querySelector('.product-details__right-column .product-details__gallery');
   const $shortDescription = fragment.querySelector('.product-details__short-description');
@@ -136,10 +424,33 @@ export default async function decorate(block) {
   const $giftCardOptions = fragment.querySelector('.product-details__gift-card-options');
   const $addToCart = fragment.querySelector('.product-details__buttons__add-to-cart');
   const $wishlistToggleBtn = fragment.querySelector('.product-details__buttons__add-to-wishlist');
+  const $requisitionSlot = fragment.querySelector('.product-details__requisition-slot');
   const $description = fragment.querySelector('.product-details__description');
   const $attributes = fragment.querySelector('.product-details__attributes');
+  const $tabs = fragment.querySelector('.product-details__tabs');
+  const $reviewsSlot = fragment.querySelector('.product-details__reviews-slot');
 
   block.replaceChildren(fragment);
+  block.classList.toggle('product-details--authenticated', isShopperAuthenticated());
+
+  const rating = product ? buildRating(product, labels) : null;
+  if (rating) {
+    $ratingSlot.replaceChildren(rating);
+  }
+
+  $reviewsSlot.replaceChildren(buildReviewsPanel(product, labels));
+  initProductTabs($tabs);
+  $requisitionSlot.replaceChildren(buildRequisitionControl(labels));
+
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('.product-details__requisition')) return;
+    const menu = $requisitionSlot.querySelector('.product-details__requisition-menu');
+    const toggle = $requisitionSlot.querySelector('.product-details__requisition-toggle');
+    if (menu && toggle) {
+      menu.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+  });
 
   const gallerySlots = {
     CarouselThumbnail: (ctx) => {
@@ -192,11 +503,11 @@ export default async function decorate(block) {
       slots: gallerySlots,
     })($galleryMobile),
 
-    // Gallery (Desktop)
+    // Gallery (Desktop) — horizontal thumbnails match Figma PDP
     pdpRendered.render(ProductGallery, {
-      controls: 'thumbnailsColumn',
+      controls: 'thumbnailsRow',
       arrows: true,
-      peak: true,
+      peak: false,
       gap: 'small',
       loop: false,
       videos: true, // Display videos if available
@@ -246,13 +557,27 @@ export default async function decorate(block) {
     // Wishlist button - WishlistToggle Container
     wishlistRender.render(WishlistToggle, {
       product,
+      variant: 'secondary',
+      size: 'medium',
+      labelToWishlist: wishlistLabel,
+      labelWishlisted: wishlistedLabel,
     })($wishlistToggleBtn),
   ]);
+
+  // SKU
+  if (product?.sku) {
+    const sku = document.createElement('div');
+    sku.className = 'pdp-header__sku';
+    sku.innerHTML = `<strong>SKU:</strong> ${product.sku}`;
+
+    $header.querySelector('.pdp-header__sku').replaceWith(sku);
+  }
+
+  enhanceShortDescription($shortDescription, labels);
 
   // Configuration – Button - Add to Cart
   const addToCart = await UI.render(Button, {
     children: labels.Global?.AddProductToCart,
-    icon: h(Icon, { source: 'Cart' }),
     onClick: async () => {
       const buttonActionText = isUpdateMode
         ? labels.Global?.UpdatingInCart
@@ -336,9 +661,29 @@ export default async function decorate(block) {
   })($addToCart);
 
   // Lifecycle Events
+  events.on('authenticated', (isAuthenticated) => {
+    block.classList.toggle(
+      'product-details--authenticated',
+      !!isAuthenticated || isShopperAuthenticated(),
+    );
+  }, { eager: true });
+
   events.on('pdp/data', (data) => {
     isOutOfStock = data?.inStock === false;
     addToCart.setProps((prev) => ({ ...prev, disabled: isOutOfStock }));
+
+    if (data) {
+      $stock.replaceChildren(buildStockBadge(data.inStock !== false, labels));
+
+      const nextRating = buildRating(data, labels);
+      $ratingSlot.replaceChildren(nextRating || '');
+      $reviewsSlot.replaceChildren(buildReviewsPanel(data, labels));
+
+      // Re-apply More... when short description content updates with product data
+      window.requestAnimationFrame(() => {
+        enhanceShortDescription($shortDescription, labels);
+      });
+    }
   }, { eager: true });
 
   events.on('pdp/valid', (valid) => {

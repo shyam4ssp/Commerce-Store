@@ -34,7 +34,7 @@ footer .footer > div > div:not(.columns-container) {
     margin-right: -50vw;
     background: #282828;
     margin-top: 80px;
-    padding: 1.2rem 0;
+    padding: 1.2rem 1.6rem;
 }
 
 footer .footer > div > div .columns > div {
@@ -331,6 +331,10 @@ footer .footer .footer-copyright {
 
     footer .footer .columns > div > div:first-child {
         width: 18%;
+    }
+
+    footer .footer .columns > div > div:nth-child(2) {
+        width: 20%;
     }
 
     footer .footer .columns > div > div:nth-child(3) {
