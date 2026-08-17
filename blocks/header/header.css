@@ -14,6 +14,10 @@ header .nav-wrapper {
   position: fixed;
 }
 
+.header-wrapper .overlay.show {
+  display: none;
+}
+
 header nav {
   box-sizing: border-box;
   display: flex;
@@ -325,7 +329,6 @@ header nav .nav-sections ul > li:empty {
     padding: 1rem;
     position: absolute;
     top: 100%;
-    width: 34.2rem;
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] ul {
@@ -339,7 +342,6 @@ header nav .nav-sections ul > li:empty {
     width: 34.2rem;
     overflow: visible;
     margin-left: 0;
-    background-color: #f1f1f1;
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] .submenu-wrapper li:has(> ul) > a,
@@ -357,14 +359,6 @@ header nav .nav-sections ul > li:empty {
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] .submenu-wrapper:has(> ul > li > ul) {
-    width: 68.4rem;
-  }
-
-  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] .submenu-wrapper:has(> ul > li > ul > li > ul) {
-    width: 102.6rem;
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true'] .submenu-wrapper li ul {
@@ -789,9 +783,48 @@ header .nav-search-input .search_autocomplete .popover-container {
   z-index: 2;
 }
 
-.overlay.show {
-  display: block;
+/* Cart Item */
+.dropin-cart-item__title,
+.dropin-cart-item__title a {
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: var(--color-somero-black);
 }
+
+.dropin-cart-item__sku {
+  font-size: 1.4rem;
+  line-height: normal;
+  color: var(--color-somero-black);
+  margin-top: 1.2rem;
+  font-weight: 400;
+}
+
+.dropin-cart-item__total,
+.dropin-cart-item__price {
+  margin-top: 1.2rem;
+}
+
+.dropin-price--small,
+.dropin-cart-item__price {
+  font-size: 1.6rem;
+  color: var(--color-somero-black);
+  font-weight: 400;
+}
+
+.dropin-cart-item__price {
+  font-size: 1.4rem;
+  color: var(--color-somero-gray);
+  font-weight: 400;
+}
+
+.dropin-cart-item__price > span {
+  font-size: 1.4rem;
+}
+
+.dropin-price--strikethrough {
+  color: var(--color-somero-gray);
+}
+/* Cart Item End */
 
 @media (max-width: 899px) {
   header {
