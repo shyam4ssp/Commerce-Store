@@ -147,6 +147,13 @@ header nav .nav-brand {
   min-width: 0;
 }
 
+.dropin-cart-item__title,
+.dropin-cart-item__title a {
+  font-weight: 400;
+  font-size: 1.6rem;
+  color: var(--color-somero-black);
+}
+
 header nav .nav-brand a {
   display: inline-flex;
   align-items: center;
@@ -783,14 +790,6 @@ header .nav-search-input .search_autocomplete .popover-container {
   z-index: 2;
 }
 
-/* Cart Item */
-.dropin-cart-item__title,
-.dropin-cart-item__title a {
-  font-weight: 400;
-  font-size: 1.6rem;
-  color: var(--color-somero-black);
-}
-
 .dropin-cart-item__sku {
   font-size: 1.4rem;
   line-height: normal;
@@ -824,7 +823,6 @@ header .nav-search-input .search_autocomplete .popover-container {
 .dropin-price--strikethrough {
   color: var(--color-somero-gray);
 }
-/* Cart Item End */
 
 @media (max-width: 899px) {
   header {
