@@ -9,6 +9,7 @@ import {
 } from '@dropins/tools/components.js';
 import { search } from '@dropins/storefront-product-discovery/api.js';
 import { tryGenerateAemAssetsOptimizedUrl } from '@dropins/tools/lib/aem/assets.js';
+import { getConfigValue } from '@dropins/tools/lib/aem/configs.js';
 // Cart Dropin
 import * as cartApi from '@dropins/storefront-cart/api.js';
 // Event Bus
@@ -17,6 +18,7 @@ import { events } from '@dropins/tools/event-bus.js';
 import { readBlockConfig } from '../../scripts/aem.js';
 import {
   checkIsAuthenticated,
+  CS_FETCH_GRAPHQL,
   fetchPlaceholders,
   getProductLink,
   rootLink,
@@ -267,6 +269,217 @@ function renderBreadcrumbs(block, config, labels) {
   }
 }
 
+const CATEGORY_TREE_QUERY = `
+  query GET_CATEGORY_TREE($ids: [String!], $subtree: Subtree) {
+    categories(ids: $ids, roles: ["active"], subtree: $subtree) {
+      id
+      name
+      level
+      position
+      parentId
+      urlKey
+      urlPath
+      children
+    }
+  }
+`;
+
+const CATEGORY_CARD_IMAGE_QUERY = `
+  query GET_CATEGORY_CARD_IMAGE($filter: [SearchClauseInput!]) {
+    productSearch(phrase: "", page_size: 1, current_page: 1, filter: $filter) {
+      items {
+        productView {
+          name
+          images {
+            url
+            label
+          }
+        }
+      }
+    }
+  }
+`;
+
+let categoryTreePromise;
+
+/**
+ * Normalizes a category URL path (no leading/trailing slashes).
+ * @param {string} path
+ * @returns {string}
+ */
+function normalizeUrlPath(path) {
+  return String(path || '').replace(/^\/+|\/+$/g, '');
+}
+
+/**
+ * Loads the catalog category tree from Catalog Service.
+ * @returns {Promise<Object[]>}
+ */
+async function loadCategoryTree() {
+  const rootCategoryId = String(getConfigValue('plugins.picker.rootCategory') || '2');
+  const { data, errors } = await CS_FETCH_GRAPHQL.fetchGraphQl(CATEGORY_TREE_QUERY, {
+    method: 'GET',
+    variables: {
+      ids: [rootCategoryId],
+      subtree: { startLevel: 2, depth: 3 },
+    },
+  });
+
+  if (errors?.length && !data?.categories) {
+    throw new Error(errors.map((err) => err.message).join('; '));
+  }
+
+  return data?.categories || [];
+}
+
+/**
+ * Returns a cached category tree.
+ * @returns {Promise<Object[]>}
+ */
+function getCategoryTree() {
+  if (!categoryTreePromise) {
+    categoryTreePromise = loadCategoryTree().catch((error) => {
+      categoryTreePromise = null;
+      throw error;
+    });
+  }
+  return categoryTreePromise;
+}
+
+/**
+ * Fetches a representative product image for a category path.
+ * @param {string} urlPath
+ * @returns {Promise<{ url: string, label: string }|null>}
+ */
+async function fetchCategoryCardImage(urlPath) {
+  if (!urlPath) return null;
+
+  const { data } = await CS_FETCH_GRAPHQL.fetchGraphQl(CATEGORY_CARD_IMAGE_QUERY, {
+    method: 'GET',
+    variables: {
+      filter: [{ attribute: 'categoryPath', eq: urlPath }],
+    },
+  });
+
+  const product = data?.productSearch?.items?.[0]?.productView;
+  const image = product?.images?.[0];
+  if (!image?.url) return null;
+
+  return {
+    url: image.url,
+    label: image.label || product.name || '',
+  };
+}
+
+/**
+ * Returns immediate subcategories for a category URL path.
+ * @param {string} urlPath
+ * @returns {Promise<Object[]>}
+ */
+async function getSubcategories(urlPath) {
+  const normalized = normalizeUrlPath(urlPath);
+  if (!normalized) return [];
+
+  let categories = [];
+  try {
+    categories = await getCategoryTree();
+  } catch (error) {
+    console.error('Error loading category tree', error);
+    return [];
+  }
+
+  const current = categories.find(
+    (category) => normalizeUrlPath(category.urlPath) === normalized,
+  );
+  const childIds = current?.children?.filter(Boolean) || [];
+  if (!childIds.length) return [];
+
+  const childIdSet = new Set(childIds);
+  return categories
+    .filter((category) => childIdSet.has(category.id))
+    .sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+}
+
+/**
+ * Appends a category image into a card.
+ * @param {Element} imageWrap
+ * @param {{ url: string, label: string }} image
+ * @param {Object} category
+ * @param {boolean} eager
+ */
+function appendCategoryImage(imageWrap, image, category, eager) {
+  const img = document.createElement('img');
+  const src = tryGenerateAemAssetsOptimizedUrl(
+    image.url,
+    category.urlKey || category.id,
+    { width: 880, height: 520 },
+  );
+  img.src = src || image.url;
+  img.alt = image.label || category.name || '';
+  img.width = 880;
+  img.height = 520;
+  img.loading = eager ? 'eager' : 'lazy';
+  if (eager) img.fetchPriority = 'high';
+  imageWrap.append(img);
+}
+
+/**
+ * Loads product images into already-rendered category cards.
+ * @param {Element} list
+ * @param {Object[]} subcategories
+ */
+function loadCategoryCardImages(list, subcategories) {
+  const items = [...list.children];
+  subcategories.forEach((category, index) => {
+    const imageWrap = items[index]?.querySelector('.plp-category-image');
+    if (!imageWrap) return;
+    fetchCategoryCardImage(normalizeUrlPath(category.urlPath))
+      .then((image) => {
+        if (image?.url) appendCategoryImage(imageWrap, image, category, index === 0);
+      })
+      .catch((error) => {
+        console.error('Error loading category image', error);
+      });
+  });
+}
+
+/**
+ * Renders a subcategory card grid in place of the product list.
+ * @param {Element} block
+ * @param {Object[]} subcategories
+ */
+function renderCategoryList(block, subcategories) {
+  const list = document.createElement('ul');
+  list.className = 'plp-category-list';
+  list.setAttribute('aria-label', 'Subcategories');
+
+  subcategories.forEach((category) => {
+    const item = document.createElement('li');
+    item.className = 'plp-category-item';
+
+    const imageWrap = document.createElement('div');
+    imageWrap.className = 'plp-category-image';
+
+    const body = document.createElement('div');
+    body.className = 'plp-category-body';
+
+    const link = document.createElement('a');
+    link.className = 'plp-category-link';
+    link.href = rootLink(`/${normalizeUrlPath(category.urlPath)}`);
+    link.textContent = category.name || '';
+    link.setAttribute('aria-label', category.name || '');
+    body.append(link);
+
+    item.append(imageWrap, body);
+    list.append(item);
+  });
+
+  block.innerHTML = '';
+  block.classList.add('product-list-page--categories');
+  block.append(list);
+  loadCategoryCardImages(list, subcategories);
+}
+
 export default async function decorate(block) {
   const labels = await fetchPlaceholders();
 
@@ -274,6 +487,17 @@ export default async function decorate(block) {
   const pageSize = parseInt(config.pagesize, 10) || 9;
 
   renderBreadcrumbs(block, config, labels);
+
+  // Add url path back to the block for enrichment, incase enrichment block is
+  // executed after the plp block and block config is not available
+  if (config.urlpath) {
+    block.dataset.urlpath = config.urlpath;
+    const subcategories = await getSubcategories(config.urlpath);
+    if (subcategories.length) {
+      renderCategoryList(block, subcategories);
+      return;
+    }
+  }
 
   const loginPriceLabel = labels.Global?.LoginToSeePrice || 'Login to see the price';
   const inStockLabel = labels.Global?.InStock || 'In Stock';
@@ -388,12 +612,6 @@ export default async function decorate(block) {
   block.appendChild(fragment);
   block.classList.toggle('product-list-page--authenticated', checkIsAuthenticated());
   block.dataset.view = 'grid';
-
-  // Add url path back to the block for enrichment, incase enrichment block is
-  // executed after the plp block and block config is not available
-  if (config.urlpath) {
-    block.dataset.urlpath = config.urlpath;
-  }
 
   const searchState = getSearchStateFromUrl(new URL(window.location.href));
 

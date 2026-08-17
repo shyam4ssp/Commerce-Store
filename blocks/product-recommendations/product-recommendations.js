@@ -21,12 +21,53 @@ import { render as wishlistRender } from '@dropins/storefront-wishlist/render.js
 // Block-level
 import { readBlockConfig } from '../../scripts/aem.js';
 import { fetchPlaceholders, getProductLink } from '../../scripts/commerce.js';
+import { bindScrollCarousel } from '../../scripts/scroll-carousel.js';
 
 // Initializers
 import '../../scripts/initializers/recommendations.js';
 import '../../scripts/initializers/wishlist.js';
 
 const isMobile = window.matchMedia('only screen and (max-width: 900px)').matches;
+
+/**
+ * Binds prev/next controls to the recommendations carousel scroll container.
+ * Waits for async product data to render the carousel content.
+ * @param {Element} block The product-recommendations block
+ * @param {Element} root Element that contains the rendered recommendations
+ */
+function createCarouselControlsSetup(block) {
+  let observer = null;
+
+  return (root) => {
+    observer?.disconnect();
+    observer = null;
+
+    const bind = () => {
+      const scrollEl = root.querySelector('.recommendations-carousel__content');
+      if (!scrollEl) {
+        block.querySelector('.scroll-carousel-nav')?.remove();
+        return false;
+      }
+
+      block.querySelector('.scroll-carousel-nav')?.remove();
+      bindScrollCarousel(block, scrollEl, { label: 'Product recommendations' });
+      return true;
+    };
+
+    if (bind()) {
+      return;
+    }
+
+    observer = new MutationObserver(() => {
+      if (bind()) {
+        observer?.disconnect();
+        observer = null;
+      }
+    });
+
+    observer.observe(root, { childList: true, subtree: true });
+  };
+}
 
 /**
  * Validates and returns a product view history entry if valid
@@ -112,6 +153,7 @@ export default async function decorate(block) {
   let visibility = !isMobile;
   let isLoading = false;
   let loadTimeout = null;
+  const setupCarouselControls = createCarouselControlsSetup(block);
 
   async function loadRecommendation(
     context,
@@ -317,6 +359,8 @@ export default async function decorate(block) {
           },
         })($wrapper),
       ]);
+
+      setupCarouselControls($wrapper);
     } finally {
       isLoading = false;
     }

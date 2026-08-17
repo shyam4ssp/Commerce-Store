@@ -144,3 +144,37 @@
 .dropin-product-item-card__price .dropin-price--default {
     color: var(--color-somero-black);
 }
+
+.product-recommendations .scroll-carousel-nav {
+    position: relative;
+}
+
+.product-recommendations-container .scroll-carousel-nav button {
+    position: absolute;
+    top: -10rem;
+    background: var(--color-somero-pink);
+    color: #fff;
+    cursor: pointer;
+    z-index: 1;
+    width: 3.2rem;
+    height: 3.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: 0;
+}
+
+.product-recommendations-container .scroll-carousel-nav .scroll-carousel-prev {
+    right: 4.5rem;
+}
+
+.product-recommendations-container .scroll-carousel-nav .scroll-carousel-next {
+    right: 0;
+}
+
+.product-recommendations-container .scroll-carousel-nav button[disabled] {
+    background-color: #fff;
+    color: var(--color-somero-black);
+    border: 1px solid #e0e0e0;
+}
