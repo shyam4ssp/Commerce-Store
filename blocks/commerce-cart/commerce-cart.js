@@ -1,6 +1,5 @@
 import { events } from '@dropins/tools/event-bus.js';
 import { render as provider } from '@dropins/storefront-cart/render.js';
-import * as Cart from '@dropins/storefront-cart/api.js';
 import { h } from '@dropins/tools/preact.js';
 import {
   InLineAlert,
@@ -13,8 +12,6 @@ import {
 import CartSummaryList from '@dropins/storefront-cart/containers/CartSummaryList.js';
 import OrderSummary from '@dropins/storefront-cart/containers/OrderSummary.js';
 import EstimateShipping from '@dropins/storefront-cart/containers/EstimateShipping.js';
-import Coupons from '@dropins/storefront-cart/containers/Coupons.js';
-import GiftCards from '@dropins/storefront-cart/containers/GiftCards.js';
 import GiftOptions from '@dropins/storefront-cart/containers/GiftOptions.js';
 import { render as wishlistRender } from '@dropins/storefront-wishlist/render.js';
 import { WishlistToggle } from '@dropins/storefront-wishlist/containers/WishlistToggle.js';
@@ -51,8 +48,14 @@ export default async function decorate(block) {
   } = readBlockConfig(block);
 
   const placeholders = await fetchPlaceholders();
-
-  const _cart = Cart.getCartDataFromCache();
+  const requestQuoteLabel = placeholders?.Global?.RequestAQuote || 'Request a Quote';
+  const requestQuoteURL = rootLink(
+    placeholders?.Global?.RequestQuoteUrl || '/request-a-quote',
+  );
+  const addToWishListLabel = placeholders?.Global?.AddToWishList || 'Add to Wish List';
+  const inWishListLabel = placeholders?.Global?.AddedToWishList
+    || placeholders?.Global?.CartRemoveFromWishlist
+    || 'In Wish List';
 
   // Modal state
   let currentModal = null;
@@ -66,7 +69,10 @@ export default async function decorate(block) {
         <div class="cart__list"></div>
       </div>
       <div class="cart__right-column">
-        <div class="cart__order-summary"></div>
+        <div class="cart__order-summary">
+          <div class="cart__order-summary-dropin"></div>
+          <a class="cart__request-quote" href="${requestQuoteURL}">${requestQuoteLabel}</a>
+        </div>
         <div class="cart__gift-options"></div>
       </div>
     </div>
@@ -77,7 +83,7 @@ export default async function decorate(block) {
   const $wrapper = fragment.querySelector('.cart__wrapper');
   const $notification = fragment.querySelector('.cart__notification');
   const $list = fragment.querySelector('.cart__list');
-  const $summary = fragment.querySelector('.cart__order-summary');
+  const $summary = fragment.querySelector('.cart__order-summary-dropin');
   const $emptyCart = fragment.querySelector('.cart__empty-cart');
   const $giftOptions = fragment.querySelector('.cart__gift-options');
   const $rightColumn = fragment.querySelector('.cart__right-column');
@@ -190,12 +196,16 @@ export default async function decorate(block) {
 
           tryRenderAemAssetsImage(ctx, {
             alias: item.sku,
-            imageProps: defaultImageProps,
+            imageProps: {
+              ...defaultImageProps,
+              width: 120,
+              height: 120,
+            },
             wrapper: anchorWrapper,
 
             params: {
-              width: defaultImageProps.width,
-              height: defaultImageProps.height,
+              width: 120,
+              height: 120,
             },
           });
         },
@@ -224,9 +234,9 @@ export default async function decorate(block) {
           wishlistRender.render(WishlistToggle, {
             product: ctx.item,
             size: 'medium',
-            labelToWishlist: placeholders?.Global?.CartMoveToWishlist,
-            labelWishlisted: placeholders?.Global?.CartRemoveFromWishlist,
-            removeProdFromCart: Cart.updateProductsFromCart,
+            variant: 'tertiary',
+            labelToWishlist: addToWishListLabel,
+            labelWishlisted: inWishListLabel,
           })($wishlistToggle);
 
           ctx.appendChild($wishlistToggle);
@@ -254,27 +264,17 @@ export default async function decorate(block) {
     // Order Summary
     provider.render(OrderSummary, {
       routeCheckout: checkoutURL ? () => rootLink(checkoutURL) : undefined,
+      enableCoupons: false,
+      enableGiftCards: false,
       slots: {
         EstimateShipping: async (ctx) => {
           if (enableEstimateShipping === 'true') {
             const wrapper = document.createElement('div');
-            await provider.render(EstimateShipping, {})(wrapper);
+            await provider.render(EstimateShipping, {
+              showDefaultEstimatedShippingCost: true,
+            })(wrapper);
             ctx.replaceWith(wrapper);
           }
-        },
-        Coupons: (ctx) => {
-          const coupons = document.createElement('div');
-
-          provider.render(Coupons)(coupons);
-
-          ctx.appendChild(coupons);
-        },
-        GiftCards: (ctx) => {
-          const giftCards = document.createElement('div');
-
-          provider.render(GiftCards)(giftCards);
-
-          ctx.appendChild(giftCards);
         },
       },
     })($summary),
