@@ -14,7 +14,7 @@ import { showSlide } from '../blocks/carousel/carousel.js';
 import { moveInstrumentation } from './ue-utils.js';
 
 const setupObservers = () => {
-  const mutatingBlocks = document.querySelectorAll('div.cards, div.carousel, div.accordion');
+  const mutatingBlocks = document.querySelectorAll('div.cards, div.carousel, div.accordion, div.category-cards');
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'childList' && mutation.target.tagName === 'DIV') {
@@ -22,10 +22,15 @@ const setupObservers = () => {
         const removedElements = mutation.removedNodes;
 
         // detect the mutation type of the block or picture (for cards)
-        const type = mutation.target.classList.contains('cards-card-image') ? 'cards-image' : mutation.target.attributes['data-aue-component']?.value;
+        const isCardImage = mutation.target.classList.contains('cards-card-image')
+          || mutation.target.classList.contains('category-cards-image');
+        const type = isCardImage ? 'cards-image' : mutation.target.attributes['data-aue-component']?.value;
 
         switch (type) {
           case 'cards':
+          case 'category-cards':
+          case 'category-cards-carousel':
+          case 'category-cards-machine':
             // handle card div > li replacements
             if (addedElements.length === 1 && addedElements[0].tagName === 'UL') {
               const ulEl = addedElements[0];
@@ -39,7 +44,7 @@ const setupObservers = () => {
             break;
           case 'cards-image':
             // handle card-image picture replacements
-            if (mutation.target.classList.contains('cards-card-image')) {
+            if (isCardImage) {
               const addedPictureEl = [...mutation.addedNodes].filter((node) => node.tagName === 'PICTURE');
               const removedPictureEl = [...mutation.removedNodes].filter((node) => node.tagName === 'PICTURE');
               if (addedPictureEl.length === 1 && removedPictureEl.length === 1) {

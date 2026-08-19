@@ -265,31 +265,6 @@
     ]
   },
   {
-    "id": "category-cards",
-    "fields": [
-      {
-        "component": "select",
-        "name": "classes",
-        "label": "Variant",
-        "valueType": "string",
-        "options": [
-          {
-            "name": "Default",
-            "value": ""
-          },
-          {
-            "name": "Carousel",
-            "value": "carousel"
-          },
-          {
-            "name": "Machine",
-            "value": "machine"
-          }
-        ]
-      }
-    ]
-  },
-  {
     "id": "category-card",
     "fields": [
       {

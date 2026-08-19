@@ -45,6 +45,7 @@
       "model": "category-card",
       "plugins": {
         "da": {
+          "name": "category-card",
           "rows": 1,
           "columns": 2,
           "fields": [
@@ -57,22 +58,6 @@
     }
   ],
   "models": [
-    {
-      "id": "category-cards",
-      "fields": [
-        {
-          "component": "select",
-          "name": "classes",
-          "label": "Variant",
-          "valueType": "string",
-          "options": [
-            { "name": "Default", "value": "" },
-            { "name": "Carousel", "value": "carousel" },
-            { "name": "Machine", "value": "machine" }
-          ]
-        }
-      ]
-    },
     {
       "id": "category-card",
       "fields": [

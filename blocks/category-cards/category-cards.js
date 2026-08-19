@@ -1,26 +1,33 @@
 import { createOptimizedPicture } from '../../scripts/aem.js';
 import { bindScrollCarousel } from '../../scripts/scroll-carousel.js';
+import { moveInstrumentation } from '../../scripts/ue-utils.js';
 
-function isHeaderRow(row) {
-  return !row.querySelector('picture, img') && !row.querySelector('a');
+function isCardRow(row) {
+  const component = row.getAttribute('data-aue-component') || row.getAttribute('data-aue-model');
+  if (component === 'category-card') return true;
+  if (row.children.length >= 2) return true;
+  return Boolean(row.querySelector('picture, img, a'));
 }
 
 function buildCard(row) {
   const cols = [...row.children];
   const li = document.createElement('li');
   li.className = 'category-cards-item';
+  moveInstrumentation(row, li);
 
-  const imageCol = cols.find((col) => col.querySelector('picture, img'));
-  const textCol = cols.find((col) => col !== imageCol) || cols[0];
+  const imageCol = cols.find((col) => col.querySelector('picture, img')) || cols[0];
+  const textCol = cols.find((col) => col !== imageCol) || cols[1] || cols[0];
 
   if (imageCol) {
     const imageWrapper = document.createElement('div');
     imageWrapper.className = 'category-cards-image';
+    moveInstrumentation(imageCol, imageWrapper);
     const img = imageCol.querySelector('img');
     if (img) {
-      imageWrapper.append(
-        createOptimizedPicture(img.src, img.alt, false, [{ width: '880' }]),
-      );
+      const picture = createOptimizedPicture(img.src, img.alt, false, [{ width: '880' }]);
+      const newImg = picture.querySelector('img');
+      if (newImg) moveInstrumentation(img, newImg);
+      imageWrapper.append(picture);
     } else {
       imageWrapper.append(...imageCol.childNodes);
     }
@@ -29,16 +36,20 @@ function buildCard(row) {
 
   const body = document.createElement('div');
   body.className = 'category-cards-body';
-  const link = textCol.querySelector('a');
-  if (link) {
-    const cardLink = document.createElement('a');
-    cardLink.className = 'category-cards-link';
-    cardLink.href = link.href;
-    cardLink.textContent = link.textContent;
-    cardLink.setAttribute('aria-label', link.textContent);
-    body.append(cardLink);
-  } else {
-    body.append(...textCol.childNodes);
+  if (textCol) {
+    moveInstrumentation(textCol, body);
+    const link = textCol.querySelector('a');
+    if (link) {
+      const cardLink = document.createElement('a');
+      cardLink.className = 'category-cards-link';
+      cardLink.href = link.href;
+      cardLink.textContent = link.textContent;
+      cardLink.setAttribute('aria-label', link.textContent);
+      moveInstrumentation(link, cardLink);
+      body.append(cardLink);
+    } else {
+      body.append(...textCol.childNodes);
+    }
   }
   li.append(body);
 
@@ -54,8 +65,8 @@ export default function decorate(block) {
   const cardRows = [];
 
   rows.forEach((row) => {
-    if (isHeaderRow(row)) headerRows.push(row);
-    else cardRows.push(row);
+    if (isCardRow(row)) cardRows.push(row);
+    else headerRows.push(row);
   });
 
   const header = document.createElement('div');
