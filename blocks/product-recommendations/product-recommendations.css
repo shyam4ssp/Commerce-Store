@@ -19,7 +19,7 @@
     padding-bottom: 2.5rem;
 }
 
-.product-recommendations-container > .default-content-wrapper h2 {
+.recommendations-product-list__heading {
     margin-top: 0;
     margin-bottom: .5rem;
     font-size: 4rem;
@@ -28,7 +28,7 @@
     text-transform: uppercase;
 }
 
-.product-recommendations-container > .default-content-wrapper p {
+.recommendations-product-list__subheading {
     margin-block: 0;
 }
 
