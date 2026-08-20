@@ -1,7 +1,3 @@
-.recommendations-product-list__heading {
-    display: none;
-}
-
 .product-recommendations .scrollable {
     overflow-x: scroll;
     scroll-snap-type: x mandatory;
