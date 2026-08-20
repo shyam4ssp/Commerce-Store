@@ -126,27 +126,9 @@ function getPurchaseHistory(storeViewCode) {
   }
 }
 
-function renderSubheading(root, text) {
-  if (!text) {
-    return;
-  }
-
-  const heading = root.querySelector('[data-testid="default-product-list-heading"]');
-
-  if (!heading) {
-    return;
-  }
-
-  // Prevent duplicate subheading
-  heading.parentElement
-    ?.querySelector('.recommendations-product-list__subheading')
-    ?.remove();
-
-  const subheadingElement = document.createElement('p');
-  subheadingElement.className = 'recommendations-product-list__subheading';
-  subheadingElement.textContent = text.trim();
-
-  heading.insertAdjacentElement('afterend', subheadingElement);
+function getSubheadingText(value) {
+  const text = Array.isArray(value) ? value.join(' ') : value;
+  return typeof text === 'string' ? text.trim() : '';
 }
 
 export default async function decorate(block) {
@@ -258,6 +240,17 @@ export default async function decorate(block) {
           userViewHistory: context.userViewHistory,
           userPurchaseHistory: context.userPurchaseHistory,
           slots: {
+            Heading: (ctx) => {
+              const text = getSubheadingText(subheading);
+              if (!text) {
+                return;
+              }
+
+              const subheadingElement = document.createElement('p');
+              subheadingElement.className = 'recommendations-product-list__subheading';
+              subheadingElement.textContent = text;
+              ctx.appendChild(subheadingElement);
+            },
             Title: (ctx) => {
               const title = document.createElement('div');
               title.textContent = ctx.item.name;
@@ -382,8 +375,6 @@ export default async function decorate(block) {
           },
         })($wrapper),
       ]);
-
-      renderSubheading($wrapper, subheading);
 
       setupCarouselControls($wrapper);
     } finally {
