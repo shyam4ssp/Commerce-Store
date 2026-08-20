@@ -126,6 +126,29 @@ function getPurchaseHistory(storeViewCode) {
   }
 }
 
+function renderSubheading(root, text) {
+  if (!text) {
+    return;
+  }
+
+  const heading = root.querySelector('[data-testid="default-product-list-heading"]');
+
+  if (!heading) {
+    return;
+  }
+
+  // Prevent duplicate subheading
+  heading.parentElement
+    ?.querySelector('.recommendations-product-list__subheading')
+    ?.remove();
+
+  const subheadingElement = document.createElement('p');
+  subheadingElement.className = 'recommendations-product-list__subheading';
+  subheadingElement.textContent = text.trim();
+
+  heading.insertAdjacentElement('afterend', subheadingElement);
+}
+
 export default async function decorate(block) {
   const labels = await fetchPlaceholders();
 
@@ -136,7 +159,7 @@ export default async function decorate(block) {
   });
 
   // Configuration
-  const { currentsku, currentprice, recid } = readBlockConfig(block);
+  const { currentsku, currentprice, recid, subheading } = readBlockConfig(block);
 
   // Layout
   const fragment = document.createRange().createContextualFragment(`
@@ -360,6 +383,8 @@ export default async function decorate(block) {
         })($wrapper),
       ]);
 
+      renderSubheading($wrapper, subheading);
+
       setupCarouselControls($wrapper);
     } finally {
       isLoading = false;
@@ -419,7 +444,6 @@ export default async function decorate(block) {
       : undefined;
     updateContext({
       currentSku: productContext?.sku,
-      subheading: productContext?.subheading,
       currentProductPrice: price,
     });
   }
