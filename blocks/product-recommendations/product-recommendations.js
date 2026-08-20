@@ -141,7 +141,12 @@ export default async function decorate(block) {
   });
 
   // Configuration
-  const { currentsku, currentprice, recid, subheading } = readBlockConfig(block);
+  const {
+    currentsku,
+    currentprice,
+    recid,
+    subheading,
+  } = readBlockConfig(block);
 
   // Layout
   const fragment = document.createRange().createContextualFragment(`

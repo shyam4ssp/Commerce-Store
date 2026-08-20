@@ -5,7 +5,10 @@ import { SignIn } from '@dropins/storefront-auth/containers/SignIn.js';
 import {
   CUSTOMER_FORGOTPASSWORD_PATH,
   rootLink,
+  fetchPlaceholders,
 } from '../../scripts/commerce.js';
+
+const placeholders = await fetchPlaceholders();
 
 function handleLogout(redirections) {
   const shouldRedirect = Object.entries(redirections).some(([currentPath, redirectPath]) => {
@@ -38,14 +41,14 @@ export function renderAuthDropdown(navTools) {
  <div class="dropdown-wrapper nav-tools-wrapper">
     <button type="button" class="nav-dropdown-button nav-tool-button" aria-haspopup="dialog" aria-expanded="false" aria-controls="login-modal">
       <span class="nav-tool-icon nav-auth-icon" aria-hidden="true"></span>
-      <span class="nav-tool-label">Register / Sign In</span>
+      <span class="nav-tool-label">My Account</span>
       <span class="nav-tool-chevron" aria-hidden="true"></span>
     </button>
     <div class="nav-auth-menu-panel nav-tools-panel">
       <div id="auth-dropin-container"></div>
       <ul class="authenticated-user-menu">
-         <li><a href="${rootLink('/customer/account')}">My Account</a></li>
-          <li><button>Logout</button></li>
+         <li><a href="${rootLink('/customer/account')}">${placeholders['header-my-account']}</a></li>
+          <li><button>${placeholders['header-log-out']}</button></li>
       </ul>
     </div>
  </div>`);
@@ -72,6 +75,7 @@ export function renderAuthDropdown(navTools) {
     authDropDownPanel.setAttribute('aria-hidden', 'false');
     authDropDownPanel.setAttribute('aria-labelledby', 'modal-title');
     authDropDownPanel.setAttribute('aria-describedby', 'modal-description');
+    loginButton.setAttribute('aria-expanded', show ? 'true' : 'false');
     authDropDownPanel.focus();
   }
 
@@ -98,16 +102,16 @@ export function renderAuthDropdown(navTools) {
 
   const updateDropDownUI = (isAuthenticated) => {
     const getUserTokenCookie = getCookie('auth_dropin_user_token');
-    const getUserNameCookie = getCookie('auth_dropin_firstname');
 
     if (isAuthenticated || getUserTokenCookie) {
+      authDropDownPanel.classList.add('loggedin');
       authDropDownMenuList.style.display = 'block';
       authDropinContainer.style.display = 'none';
-      loginButton.querySelector('.nav-tool-label').textContent = `Hi, ${getUserNameCookie}`;
+      loginButton.querySelector('.nav-tool-label').textContent = placeholders['header-my-account'];
     } else {
       authDropDownMenuList.style.display = 'none';
       authDropinContainer.style.display = 'block';
-      loginButton.querySelector('.nav-tool-label').textContent = 'Register / Sign In';
+      loginButton.querySelector('.nav-tool-label').textContent = placeholders['header-sign-in'];
     }
   };
 
