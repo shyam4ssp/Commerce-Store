@@ -25,6 +25,11 @@
           "component": "text",
           "name": "currentSku",
           "label": "Current SKU"
+        },
+        {
+          "component": "text",
+          "name": "subheading",
+          "label": "Subheading"
         }
       ]
     }

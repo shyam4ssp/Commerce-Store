@@ -252,7 +252,7 @@ export default async function decorate(block) {
                 const element = document.createElement('div');
                 element.className = 'dropin-product-item-card__price';
                 element.innerHTML = `
-                  <a href="/customer/login" class="footer__button--add-to-cart-text">Login to see the price <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_1430_653)"><path d="M7.5 5L12.5 10L7.5 15" stroke="#C83293" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_1430_653"><rect width="20" height="20" fill="white"/></clipPath></defs></svg></a>
+                  <a href="https://parts.somero.com/login" target="_blank" class="footer__button--add-to-cart-text">Login to see the price <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_1430_653)"><path d="M7.5 5L12.5 10L7.5 15" stroke="#C83293" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_1430_653"><rect width="20" height="20" fill="white"/></clipPath></defs></svg></a>
                 `;
                 ctx.replaceWith(element);
               }
@@ -383,7 +383,7 @@ export default async function decorate(block) {
 
   function shouldReloadRecommendations(newContext) {
     // Check if significant context changes occurred that warrant reloading recommendations
-    const significantChanges = ['currentSku', 'currentProductPrice', 'pageType', 'category'];
+    const significantChanges = ['currentSku', 'currentProductPrice', 'pageType', 'category', 'subheading'];
 
     return significantChanges.some(
       (key) => newContext[key] !== previousContext[key] && newContext[key] !== undefined,
@@ -419,6 +419,7 @@ export default async function decorate(block) {
       : undefined;
     updateContext({
       currentSku: productContext?.sku,
+      subheading: productContext?.subheading,
       currentProductPrice: price,
     });
   }
